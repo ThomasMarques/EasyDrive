@@ -54,6 +54,13 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
 		</dependency>
+		
+		<!-- EL -->
+		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>apache-tomee</artifactId>
+			<version>1.6.0</version>
+		</dependency>
             
 		
 	</dependencies>
