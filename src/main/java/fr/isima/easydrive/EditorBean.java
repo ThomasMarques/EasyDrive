@@ -1,4 +1,4 @@
-package com.mkyong.editor;
+package fr.isima.easydrive;
 
 import javax.faces.bean.ManagedBean;
 
