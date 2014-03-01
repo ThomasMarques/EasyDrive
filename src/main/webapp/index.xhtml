@@ -10,11 +10,23 @@
 <h:head>
 </h:head>
 <h:body>
-	<h1>Hello World Florian :)</h1>
+	<pre >___________                     ________        .__              
+\_   _____/____    _________.__.\______ \_______|__|__  __ ____  
+ |    __)_\__  \  /  ___&lt;   |  | |    |  \_  __ \  \  \/ // __ \ 
+ |        \/ __ \_\___ \ \___  | |    `   \  | \/  |\   /\  ___/ 
+/_______  (____  /____  &gt;/ ____|/_______  /__|  |__| \_/  \___  &gt;
+        \/     \/     \/ \/             \/                    \/ 
+    </pre>
 
 	<h:form>
-		<p:editor value="#{editor.value}" />
+	   <p:focus for="terminal" />
+	
+	   <p:terminal id="terminal" widgetVar="term" commandHandler="#{terminalController.handleCommand}"
+	               welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date." />
+	
+	   <p:commandButton type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px"/>
 	</h:form>
+                    
 
 </h:body>
 </html>
