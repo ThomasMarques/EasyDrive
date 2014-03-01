@@ -1,0 +1,13 @@
+@CHARSET "ISO-8859-1";
+
+#center
+{
+	float: left;
+	width: 79%;
+}
+
+#east 
+{
+	float: left;
+	width: 20%;
+}

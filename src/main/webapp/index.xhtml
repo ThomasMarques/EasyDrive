@@ -6,27 +6,46 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-
 <h:head>
+	<h:outputStylesheet library="default" name="css/customStyle.css" />
 </h:head>
 <h:body>
-	<pre >___________                     ________        .__              
-\_   _____/____    _________.__.\______ \_______|__|__  __ ____  
- |    __)_\__  \  /  ___&lt;   |  | |    |  \_  __ \  \  \/ // __ \ 
- |        \/ __ \_\___ \ \___  | |    `   \  | \/  |\   /\  ___/ 
-/_______  (____  /____  &gt;/ ____|/_______  /__|  |__| \_/  \___  &gt;
-        \/     \/     \/ \/             \/                    \/ 
-    </pre>
-
-	<h:form>
-	   <p:focus for="terminal" />
-	
-	   <p:terminal id="terminal" widgetVar="term" commandHandler="#{terminalController.handleCommand}"
-	               welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date." />
-	
-	   <p:commandButton type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px"/>
-	</h:form>
-                    
-
+	<center>
+		<pre id="title" >
+ _______                                  _____                                   
+/\  ____\                                /\  _ `\           __                   
+\ \ \___        __       ____   __  __   \ \ \/\ \   _ __  /\_\   __  __     __   
+ \ \  __\     /'__`\    /',__\ /\ \/\ \   \ \ \ \ \ /\`'__\\/\ \ /\ \/\ \  /'__`\ 
+  \ \ \_____ /\ \_\.\_ /\__, `\\ \ \_\ \   \ \ \_\ \\ \ \/  \ \ \\ \ \_/ |/\  __/ 
+   \ \______\\ \__/.\_\\/\____/ \/`____ \   \ \____/ \ \_\   \ \_\\ \___/ \ \____\
+    \/______/ \/__/\/_/ \/___/   `/___/> \   \/___/   \/_/    \/_/ \/__/   \/____/
+                                    /\___/                                        
+                                    \/__/                                         
+    	</pre>
+    </center>
+    <div id="content">
+	    <div id="center" >
+			<h:form>
+				<p:focus for="terminal" />
+			   <p:terminal id="terminal" widgetVar="term" commandHandler="#{terminalController.handleCommand}"
+			               welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date." />
+			
+			   <p:commandButton type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px"/>
+			</h:form>
+		</div>
+	    <div id="east" >
+	    	<pre id="help_title" >
+ __    __            __                
+/\ \  /\ \          /\ \               
+\ \ \_\_\ \      __ \ \ \    ______    
+ \ \  ___  \   /'__`\\ \ \  /\ '___`\  
+  \ \ \ \ \ \ /\  __/ \ \ \ \ \ \__\ \ 
+   \ \_\ \ \_\\ \____\ \ \_\ \ \  ____\
+    \/_/  \/_/ \/____/  \/_/  \ \ \___/
+                               \ \_\   
+                                \/_/   
+    		</pre>
+    	</div>
+	</div>
 </h:body>
 </html>
