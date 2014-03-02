@@ -7,7 +7,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
-	<h:outputStylesheet library="default" name="css/customStyle.css" />
+	<h:outputStylesheet library="defaultTheme" name="customStyle.css" />
 </h:head>
 <h:body>
 	<center>
@@ -24,16 +24,7 @@
     	</pre>
     </center>
     <div id="content">
-	    <div id="center" >
-			<h:form>
-				<p:focus for="terminal" />
-			   <p:terminal id="terminal" widgetVar="term" commandHandler="#{terminalController.handleCommand}"
-			               welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date." />
-			
-			   <p:commandButton type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px"/>
-			</h:form>
-		</div>
-	    <div id="east" >
+	    <div id="west" >
 	    	<pre id="help_title" >
  __    __            __                
 /\ \  /\ \          /\ \               
@@ -45,7 +36,20 @@
                                \ \_\   
                                 \/_/   
     		</pre>
+    		<span class="bold" >ls</span><br />
+    		List files in the current folder
+    		<span class="bold" >date</span><br />
+    		return the current date.
     	</div>
+	    <div id="center" >
+			<h:form>
+				<p:focus for="terminal" />
+			   <p:terminal id="terminal" widgetVar="term" commandHandler="#{terminalController.handleCommand}"
+			               welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date." />
+			
+			   <p:commandButton type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px"/>
+			</h:form>
+		</div>
 	</div>
 </h:body>
 </html>

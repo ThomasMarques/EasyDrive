@@ -1,0 +1,36 @@
+@CHARSET "ISO-8859-1";
+
+*
+{
+	color: white;
+	background-color: black;
+}
+
+span.bold 
+{
+	font-weight: bold;
+}
+
+#center
+{
+	border: 1px dashed white;
+	float: left;
+	width: 70%;
+}
+
+#west 
+{
+	float: left;
+	width: 15%;
+}
+
+#west #help_title
+{
+	font-size: 6px;
+}
+
+.ui-widget-content {
+	color: white!important;
+	background-color: black!important;
+	border: none!important;
+}
