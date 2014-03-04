@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `back_file` (
   `size` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `creation_date` date NOT NULL,
-  `last_modification_date` date NOT NULL,
+  `last_modification_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

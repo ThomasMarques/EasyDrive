@@ -1,4 +1,4 @@
-package fr.isima.tps.terminalController;
+package fr.isima.easydrive.controller;
 
 import javax.faces.bean.ManagedBean;
 
