@@ -1,7 +1,5 @@
 package fr.isima.tps.terminalController;
 
-import java.util.Date;  
-
 import javax.faces.bean.ManagedBean;
 
 @ManagedBean(name="terminalController")
@@ -14,9 +12,11 @@ public class TerminalController {
 			else  
 				return "Hello Stranger remind you that Florian is legendary";  
 		}  
-		else if(command.equals("date"))  
-			return new Date().toString();  
+		else if(command.equals("pwd"))  
+			return "server side.";
+		else if(command.equals("clear") || command.equals("server") || command.equals("local"))
+			return "";
 		else  
-			return command + " not found";  
+			return "is not a server command.";  
 	}  
 }   
