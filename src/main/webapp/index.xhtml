@@ -13,11 +13,10 @@
    <!-- Allows to use $ instead of jquery -->
    <script type="text/javascript"> $ = jQuery;</script> 
    
-	<h:outputStylesheet library="defaultTheme" name="customStyle.css" />
+	<h:outputStylesheet library="css" name="customStyle.css" />
 </h:head>
 <h:body>
-	<center>
-		<pre id="title" >
+	<pre id="title" >
  _______                                  _____                                   
 /\  ____\                                /\  _ `\           __                   
 \ \ \___        __       ____   __  __   \ \ \/\ \   _ __  /\_\   __  __     __   
@@ -27,11 +26,10 @@
     \/______/ \/__/\/_/ \/___/   `/___/> \   \/___/   \/_/    \/_/ \/__/   \/____/
                                     /\___/                                        
                                     \/__/                                         
-    	</pre>
-    </center>
+   	</pre>
     <div id="content">
-	    <div id="west" >
-	    	<pre id="help_title" >
+	    <div id="border" >
+	    	<pre id="border_title" >
  __    __            __                
 /\ \  /\ \          /\ \               
 \ \ \_\_\ \      __ \ \ \    ______    
@@ -42,10 +40,11 @@
                                \ \_\   
                                 \/_/   
     		</pre>
+    		...
     		<span class="bold" >ls</span><br />
-    		List files in the current folder
+    		List files in the current folder<br />
     		<span class="bold" >date</span><br />
-    		return the current date.
+    		return the current date.<br />
     	</div>
 
     	<h:form id="form-file" style="display:none" action="#">  
@@ -64,6 +63,25 @@
 			   <p:commandButton id="button_clear" type="button" value="Clear" icon="ui-icon-trash" onclick="PF('term').clear()" style="margin-top:10px;display:none;"/>
 			</h:form>
 		</div>
+		
+		<div id="border" >
+	    	<pre id="border_title" >
+ _____   __    __                      
+/\  __`\/\ \__/\ \                     
+\ \ \/\ \ \ ,_\ \ \___      __   _ __  
+ \ \ \ \ \ \ \/\ \  _ `\  /'__`\/\`'__\
+  \ \ \_\ \ \ \_\ \ \ \ \/\  __/\ \ \/ 
+   \ \_____\ \__\\ \_\ \_\ \____\\ \_\ 
+    \/_____/\/__/ \/_/\/_/\/____/ \/_/ 
+
+    
+    		</pre>
+    		Other thing to show.
+    		Other thing to show.
+    		Other thing to show.
+    		Other thing to show.
+    		Other thing to show.<br />
+    	</div>
 		
 		<div id="elem-mess" style="display:none"><div> content </div></div>
 	</div>

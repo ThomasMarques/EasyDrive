@@ -13,20 +13,26 @@ span.bold
 
 #center
 {
-	border: 1px dashed white;
 	float: left;
-	width: 70%;
+	width: 63%;
 }
 
-#west 
+#title
 {
-	float: left;
-	width: 15%;
+	text-align: center;
 }
 
-#west #help_title
+#border 
 {
+	float: left;
+	width: 18%;
+}
+
+#border #border_title
+{
+	text-align: center;
 	font-size: 6px;
+	padding-bottom: 10px;
 }
 
 .ui-widget-content {
