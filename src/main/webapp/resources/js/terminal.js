@@ -4,23 +4,37 @@ $(document).ready(function() {
 	name_bakup="";
 
 	//TODO : TO DELETE WHEN THE CSS IS DONE
-	$(".ui-terminal-prompt").css("color", "green");
+	$(".ui-terminal-prompt").addClass("ui-terminal-prompt-server");
 
 	//*****************TOOLS FUNCTION***********************
 	// 
 	//******************************************************
 
+	function end_command(){
+		$(".ui-terminal-content").first().children().each(function(){
+			$(this).children().each(function(){
+				if( $(this).is("span") && !$(this).hasClass("ui-terminal-command"))
+					$(this).addClass("ui-terminal-prompt-"+context);
+				else if( $(this).is("div") && $(this).html() == "is not a server command.")
+					$(this).addClass("error");
+			});
+		});
+	}
+	
 	///add command-line to the front
-	function add_elem(command, content){
+	function add_elem(command, content, error=false){
 		var elem = $("#elem-mess").html();
 		elem = elem.replace("mycommand", command);
 		elem = elem.replace("content", content);
 		elem = elem.replace("display:none", "");
+		if(error)
+			elem = elem.replace("myclass", "error");
 		$(".ui-terminal-content").append(elem);
 	}
 
 	function get_status(){
 		var stat = "";
+
 		$(".ui-fileupload-preview").each(function(){
 			$(this).next().each(function(){
 				stat = stat + $(this).html()+ '(';
@@ -28,6 +42,10 @@ $(document).ready(function() {
 				stat = stat + $(this).html()+ ')  ';
 			});
 		});
+		
+		if(stat == "")
+			stat = "Nothing to push."; 
+		
 		return stat;
 	}
 
@@ -58,13 +76,15 @@ $(document).ready(function() {
 
 	function errorCommand(){
 		setTimeout(function() {
-			add_elem('', "is not a local command.");
+			add_elem('', "is not a local command.", true);
 		}, 20);	   	 		
 	}
 
 	function add(){
 		//simulate click on primefaces file uploader
 		$("#form-file\\:add-file_input").trigger("click");
+		setTimeout(function() {
+		}, 20);
 	}
 
 	function push(){
@@ -108,7 +128,8 @@ $(document).ready(function() {
 		if(context != "local"){
 			setTimeout(function() {
 				context="local";
-				$(".ui-terminal-prompt").css("color", "red");
+				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
+				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-local");
 				$(".ui-button").trigger("click");
 				desactivate_form();
 			}, 30);	
@@ -124,14 +145,14 @@ $(document).ready(function() {
 		if(context != "server"){
 			setTimeout(function() {
 				context="server";
-				$(".ui-terminal-prompt").css("color", "green");
+				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-local");
+				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-server");
 				$(".ui-button").trigger("click");
 				activate_form();
 			}, 20);
 		}
 		else {
 			setTimeout(function() {
-
 				add_elem("server", "you are already in server context.");
 			}, 20);	
 		}
@@ -139,13 +160,22 @@ $(document).ready(function() {
 
 	function pwd(){
 		setTimeout(function() {
-			add_elem("pwd", "client side.");
+			add_elem("pwd", "local side.");
 		}, 20);
 	}
 
 	function clear(){
 		setTimeout(function() {
 			$("#form\\:button_clear").trigger("click");
+		}, 20);	   	 		
+	}
+	
+	function help(){
+		clear();
+		setTimeout(function() {
+			add_elem("", "local  : pwd, add, status, push, remove.");
+			add_elem("", "server : ls, pwd");
+			add_elem("", "both   : local, server, clear, help");
 		}, 20);	   	 		
 	}
 
@@ -174,7 +204,7 @@ $(document).ready(function() {
 			e.preventDefault();
 
 			// list of prioritar commands
-			// client AND server side
+			// local AND server side
 			switch(command_id) {
 			case "server": //change context to server
 				server();
@@ -184,6 +214,9 @@ $(document).ready(function() {
 				return;
 			case "clear": //clear term
 				clear();
+				return;
+			case "help": //clear term
+				help();
 				return;
 			}
 
@@ -212,6 +245,9 @@ $(document).ready(function() {
 				break;
 				}
 			}
+			setTimeout(function() {
+				end_command();
+			}, 20);
 
 		}
 	});

@@ -8,82 +8,56 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<!-- Allows to use $ instead of jquery -->
-	<script type="text/javascript"> $ = jQuery;</script>
+	<script type="text/javascript">
+		$ = jQuery;
+	</script>
 	<h:outputStylesheet library="css" name="customStyle.css" />
 </h:head>
 <h:body>
-	<pre id="title">
- _______                                  _____                                   
-/\  ____\                                /\  _ `\           __                   
-\ \ \___        __       ____   __  __   \ \ \/\ \   _ __  /\_\   __  __     __   
- \ \  __\     /'__`\    /',__\ /\ \/\ \   \ \ \ \ \ /\`'__\\/\ \ /\ \/\ \  /'__`\ 
-  \ \ \_____ /\ \_\.\_ /\__, `\\ \ \_\ \   \ \ \_\ \\ \ \/  \ \ \\ \ \_/ |/\  __/ 
-   \ \______\\ \__/.\_\\/\____/ \/`____ \   \ \____/ \ \_\   \ \_\\ \___/ \ \____\
-    \/______/ \/__/\/_/ \/___/   `/___/> \   \/___/   \/_/    \/_/ \/__/   \/____/
-                                    /\___/                                        
-                                    \/__/                                         
+	<div id="core">
+		<pre id="title">
+███████╗ █████╗ ███████╗██╗   ██╗    ██████╗ ██████╗ ██╗██╗   ██╗███████╗
+██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝    ██╔══██╗██╔══██╗██║██║   ██║██╔════╝
+█████╗  ███████║███████╗ ╚████╔╝     ██║  ██║██████╔╝██║██║   ██║█████╗  
+██╔══╝  ██╔══██║╚════██║  ╚██╔╝      ██║  ██║██╔══██╗██║╚██╗ ██╔╝██╔══╝  
+███████╗██║  ██║███████║   ██║       ██████╔╝██║  ██║██║ ╚████╔╝ ███████╗
+				     ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝       ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝  ╚══════╝                                     
    	</pre>
-	<div id="content">
-		<div id="border">
-			<pre id="border_title">
- __    __            __                
-/\ \  /\ \          /\ \               
-\ \ \_\_\ \      __ \ \ \    ______    
- \ \  ___  \   /'__`\\ \ \  /\ '___`\  
-  \ \ \ \ \ \ /\  __/ \ \ \ \ \ \__\ \ 
-   \ \_\ \ \_\\ \____\ \ \_\ \ \  ____\
-    \/_/  \/_/ \/____/  \/_/  \ \ \___/
-                               \ \_\   
-                                \/_/   
-    		</pre>
-			... <span class="bold">ls</span><br /> List files in the current
-			folder<br /> <span class="bold">date</span><br /> return the
-			current date.<br />
-		</div>
-
-		<h:form id="form-file" style="display:none;" action="#">
-			<p:fileUpload id="add-file"
-				fileUploadListener="#{fileUploadController.handleFileUpload}"
-				mode="advanced" dragDropSupport="true" multiple="true"
-				update="messages" sizeLimit="100000" />
-			<p:growl id="messages" showDetail="true" />
-		</h:form>
-
-		<div id="center">
-			<h:form id="form">
-				<p:focus for="terminal" />
-				<p:terminal id="terminal" widgetVar="term"
-					commandHandler="#{terminalController.handleCommand}"
-					welcomeMessage="Welcome to EasyDrive Terminal, try ls command or date."
-					prompt="zzdrive $" />
-
-				<p:commandButton id="button_clear" type="button" value="Clear"
-					icon="ui-icon-trash" onclick="PF('term').clear()"
-					style="margin-top:10px;display:none;" />
+   		<div id="subtitle">
+   		Some subtitle text to explain why we have created <b>easydrive</b>. Maybe on multiple lines, blablablablablabla.
+   		</div>
+		<div id="content">
+			<h:form id="form-file" style="display:none;" action="#">
+				<p:fileUpload id="add-file"
+					fileUploadListener="#{fileUploadController.handleFileUpload}"
+					mode="advanced" dragDropSupport="true" multiple="true"
+					update="messages" sizeLimit="100000" />
+				<p:growl id="messages" showDetail="true" />
 			</h:form>
-		</div>
 
-		<div id="border">
-			<pre id="border_title">
- _____   __    __                      
-/\  __`\/\ \__/\ \                     
-\ \ \/\ \ \ ,_\ \ \___      __   _ __  
- \ \ \ \ \ \ \/\ \  _ `\  /'__`\/\`'__\
-  \ \ \_\ \ \ \_\ \ \ \ \/\  __/\ \ \/ 
-   \ \_____\ \__\\ \_\ \_\ \____\\ \_\ 
-    \/_____/\/__/ \/_/\/_/\/____/ \/_/ 
+			<div id="center">
+				<div id="term-title"><span id="text-term-title">easydrive - term</span></div>
+				<div id="text-term-subtitle"><span>Welcome to EasyDrive Terminal, type help to see command.</span></div>
+				<h:form id="form">
+					<p:focus for="terminal" />
+					<p:terminal id="terminal" widgetVar="term"
+						commandHandler="#{terminalController.handleCommand}"
+						prompt="zzdrive" />
 
-    
-    		</pre>
-			Other thing to show. Other thing to show. Other thing to show. Other
-			thing to show. Other thing to show.<br />
-		</div>
+					<p:commandButton id="button_clear" type="button" value="Clear"
+						icon="ui-icon-trash" onclick="PF('term').clear()"
+						style="margin-top:10px;display:none;" />
+				</h:form>
+			</div>
 
-		<div id="elem-mess" style="display: none">
-			<div>content</div>
+			<div id="elem-mess" style="display: none">
+				<div class="myclass">content</div>
+			</div>
 		</div>
+		<div id="footer">
+   		by Rotagnon Florian &amp;&amp; Marques Thomas
+   		</div>
 	</div>
-
 	<h:outputScript library="js" name="terminal.js" />
 </h:body>
 </html>
