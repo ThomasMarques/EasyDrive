@@ -3,13 +3,15 @@
 	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
 	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/jstl/1.2/jstl-1.2.jar" sourcepath="M2_REPO/javax/servlet/jstl/1.2/jstl-1.2-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar" sourcepath="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar" sourcepath="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/el/el-api/2.2/el-api-2.2.jar" sourcepath="M2_REPO/javax/el/el-api/2.2/el-api-2.2-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar" sourcepath="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
 	<classpathentry kind="var" path="M2_REPO/org/primefaces/primefaces/4.0/primefaces-4.0.jar" sourcepath="M2_REPO/org/primefaces/primefaces/4.0/primefaces-4.0-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/sun/faces/jsf-api/2.1.11/jsf-api-2.1.11.jar" sourcepath="M2_REPO/com/sun/faces/jsf-api/2.1.11/jsf-api-2.1.11-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/sun/faces/jsf-impl/2.1.11/jsf-impl-2.1.11.jar" sourcepath="M2_REPO/com/sun/faces/jsf-impl/2.1.11/jsf-impl-2.1.11-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/glassfish/web/el-impl/2.2/el-impl-2.2.jar" sourcepath="M2_REPO/org/glassfish/web/el-impl/2.2/el-impl-2.2-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/sun/faces/jsf-api/2.2.2/jsf-api-2.2.2.jar" sourcepath="M2_REPO/com/sun/faces/jsf-api/2.2.2/jsf-api-2.2.2-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/sun/faces/jsf-impl/2.2.2/jsf-impl-2.2.2.jar" sourcepath="M2_REPO/com/sun/faces/jsf-impl/2.2.2/jsf-impl-2.2.2-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate-entitymanager/4.3.0.Beta3/hibernate-entitymanager-4.3.0.Beta3.jar" />
+	<classpathentry kind="var" path="M2_REPO/javax/persistence/persistence-api/1.0.2/persistence-api-1.0.2.jar" />
+	<classpathentry kind="con" path="org.eclipse.datatools.connectivity.jdt.DRIVERLIBRARY/MySQL JDBC Driver"/>
 	<classpathentry kind="output" path="target/classes"/>
+	
+	
 </classpath>

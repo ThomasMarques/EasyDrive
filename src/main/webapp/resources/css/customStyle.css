@@ -2,8 +2,8 @@
 
 *
 {
-	color: white;
-	background-color: black;
+	//color: white;
+	//background-color: black;
 }
 
 span.bold 
@@ -15,6 +15,7 @@ span.bold
 {
 	float: left;
 	width: 63%;
+	border: 1px dashed white;s
 }
 
 #title
@@ -36,7 +37,7 @@ span.bold
 }
 
 .ui-widget-content {
-	color: white!important;
-	background-color: black!important;
-	border: none!important;
+	//color: white!important;
+	//background-color: black!important;
+	//border: none!important;
 }
