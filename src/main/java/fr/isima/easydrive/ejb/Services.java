@@ -1,8 +1,13 @@
 package fr.isima.easydrive.ejb;
 
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+
 import fr.isima.easydrive.dao.UserAccessLayer;
 import fr.isima.easydrive.entity.User;
 
+@Singleton
+@LocalBean
 public class Services {
 
 	private UserAccessLayer userDAL;
