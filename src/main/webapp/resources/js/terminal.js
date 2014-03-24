@@ -19,10 +19,12 @@ $(document).ready(function() {
 					$(this).addClass("error");
 			});
 		});
+		
+		$('.ui-terminal-input', form).val("");
 	}
 	
 	///add command-line to the front
-	function add_elem(command, content, error=false){
+	function add_elem(command, content, error){
 		var elem = $("#elem-mess").html();
 		elem = elem.replace("mycommand", command);
 		elem = elem.replace("content", content);
@@ -74,9 +76,9 @@ $(document).ready(function() {
 	// 
 	//******************************************************
 
-	function errorCommand(){
+	function errorCommand(full_command){
 		setTimeout(function() {
-			add_elem('', "is not a local command.", true);
+			add_elem(full_command, "is not a local command.", true);
 		}, 20);	   	 		
 	}
 
@@ -98,7 +100,7 @@ $(document).ready(function() {
 			else
 				mess_push = " file " + mess_push;
 
-			add_elem("push", get_nb_file() + mess_push);
+			add_elem("push", get_nb_file() + mess_push, false);
 		}, 20);	   	 		
 	}
 
@@ -114,13 +116,13 @@ $(document).ready(function() {
 			else
 				mess_rem = " file " + mess_rem;
 
-			add_elem("remove", nb_removed + mess_rem);
+			add_elem("remove", nb_removed + mess_rem, false);
 		}, 20);	   	 		
 	}
 
 	function status(){
 		setTimeout(function() {
-			add_elem("status", get_status());
+			add_elem("status", get_status(), false);
 		}, 20);	   	 		
 	}
 
@@ -136,7 +138,7 @@ $(document).ready(function() {
 		}
 		else {
 			setTimeout(function() {
-				add_elem("local", "you are already in local context.");
+				add_elem("local", "you are already in local context.", false);
 			}, 20);	
 		}
 	}
@@ -153,14 +155,14 @@ $(document).ready(function() {
 		}
 		else {
 			setTimeout(function() {
-				add_elem("server", "you are already in server context.");
+				add_elem("server", "you are already in server context.", false);
 			}, 20);	
 		}
 	}
 
 	function pwd(){
 		setTimeout(function() {
-			add_elem("pwd", "local side.");
+			add_elem("pwd", "local side.", false);
 		}, 20);
 	}
 
@@ -173,9 +175,9 @@ $(document).ready(function() {
 	function help(){
 		clear();
 		setTimeout(function() {
-			add_elem("", "local  : pwd, add, status, push, remove.");
-			add_elem("", "server : ls, pwd");
-			add_elem("", "both   : local, server, clear, help");
+			add_elem("", "local  : pwd, add, status, push, remove.", false);
+			add_elem("", "server : ls, pwd", false);
+			add_elem("", "both   : local, server, clear, help", false);
 		}, 20);	   	 		
 	}
 
@@ -185,7 +187,7 @@ $(document).ready(function() {
 
 	//on file choosen by user
 	$('#form-file input').change(function() {
-		add_elem("add", get_status());
+		add_elem("add", get_status(), false);
 	});
 	
 	$("#form\\:terminal").click(function(){
@@ -241,13 +243,14 @@ $(document).ready(function() {
 					pwd();
 					break;
 				default: //error message
-					errorCommand();
+					errorCommand(full_command);
 				break;
 				}
 			}
+			
 			setTimeout(function() {
 				end_command();
-			}, 20);
+			}, 30);
 
 		}
 	});
