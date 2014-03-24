@@ -25,8 +25,8 @@ public class TerminalController {
 		else if(command.equals("clear") || command.equals("server") || command.equals("local"))
 			return "";
 		else if(command.equals("test"))
-			return services.getUser(1).getLogin();
-		else  
+			return "test : " + services.getUser(1).getLogin();
+		else
 			return "is not a server command.";  
 	}
 }   
