@@ -27,14 +27,12 @@
    			Some subtitle text to explain why we have created <b>easydrive</b>. Maybe on multiple lines, blablablablablabla.
    		</div>
 		<div id="content">
-			<h:form id="form-file" style="display:none;" action="#">
-				<p:fileUpload id="add-file"
-					fileUploadListener="#{fileUploadController.handleFileUpload}"
-					mode="advanced" dragDropSupport="true" multiple="true"
-					update="messages" sizeLimit="100000" />
-				<p:growl id="messages" showDetail="true" />
+			<h:form id="form-file" style="display: none;">
+			    <p:fileUpload id="add-file" fileUploadListener="#{fileUploadController.handleFileUpload}" mode="advanced" dragDropSupport="false"
+			                  multiple="true" update="messages" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+			    <p:growl id="messages" showDetail="true"/>
 			</h:form>
-
+                    
 			<div id="center">
 				<div id="term-title"><span id="text-term-title">easydrive - term</span></div>
 				<div id="text-term-subtitle"><span>Welcome to EasyDrive Terminal, type help to see command.</span></div>
@@ -50,7 +48,7 @@
 				</h:form>
 			</div>
 
-			<div id="elem-mess" style="display: none">
+			<div id="elem-mess" style="display: none;">
 				<span class="ui-terminal-prompt ui-terminal-prompt-local">zzdrive</span> mycommand
 				<div class="myclass">content</div>
 			</div>

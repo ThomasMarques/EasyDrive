@@ -1,10 +1,14 @@
 $(document).ready(function() {
 	///global variables
-	context="server";
+	context="login";
 	name_bakup="";
+	user="";
+	password="";
+	command_save="";
 
 	//TODO : TO DELETE WHEN THE CSS IS DONE
-	$(".ui-terminal-prompt").addClass("ui-terminal-prompt-server");
+	$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
+	desactivate_form();
 
 	//*****************TOOLS FUNCTION***********************
 	// 
@@ -160,6 +164,11 @@ $(document).ready(function() {
 		}
 	}
 
+	function login(){
+		$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
+		$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
+	}
+	
 	function pwd(){
 		setTimeout(function() {
 			add_elem("pwd", "local side.", false);
@@ -167,17 +176,15 @@ $(document).ready(function() {
 	}
 
 	function clear(){
-		setTimeout(function() {
+		//setTimeout(function() {
 			$("#form\\:button_clear").trigger("click");
-		}, 20);	   	 		
+		//}, 20);	   	 		
 	}
 	
 	function help(){
 		clear();
 		setTimeout(function() {
-			add_elem("", "local  : pwd, add, status, push, remove.", false);
-			add_elem("", "server : ls, pwd", false);
-			add_elem("", "both   : local, server, clear, help", false);
+			add_elem("help", "local  : pwd, add, status, push, remove.<br/>server : ls, pwd<br/>both   : local, server, clear, help", false);
 		}, 20);	   	 		
 	}
 
@@ -194,6 +201,44 @@ $(document).ready(function() {
 		$("#form\\:terminal_input").focus();
 	});
 
+	base_cpt = 0;
+	$(document).bind("DOMSubtreeModified", function(evt) {
+		if(context == "server"){
+			var respond = $(".ui-terminal-content").children(':last').children(':last').html();
+			var new_cpt = $(".ui-terminal-content").children().size();
+			if( respond != null && new_cpt != base_cpt )
+			{
+				base_cpt = new_cpt;
+				$("#form\\:terminal_input").removeAttr('disabled');
+		    	$("#form\\:terminal").trigger("click");
+			}
+			
+			if( respond == "connection ok")
+	    	{
+				base_cpt = 0;
+				context="server";
+		    	clear();
+	    		add_elem("connection", "connection ok.", false);
+	    	}
+		    else if( respond == "connection failed")
+	    	{
+		    	base_cpt = 0;
+		    	desactivate_form();
+		    	context="login";
+		    	clear();
+				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
+				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
+				$(".ui-button").trigger("click");
+				add_elem("connection", "connection failed, try again!", false);
+	    	}
+			
+			if( respond != null && new_cpt == base_cpt)
+				setTimeout(function() {
+					end_command();
+				}, 30);
+		}
+	});
+	
 	//event controller on keydow to create proxy before primefaces terminal
 	$("#form").keydown(function(e) {
 		//on enter key
@@ -202,9 +247,9 @@ $(document).ready(function() {
 			var formUrl=form.attr('action');
 			var full_command = $('.ui-terminal-input', form).val();
 			var command_id = full_command.split(" ")[0];
-
+			command_save = command_id;
 			e.preventDefault();
-
+			
 			// list of prioritar commands
 			// local AND server side
 			switch(command_id) {
@@ -221,9 +266,45 @@ $(document).ready(function() {
 				help();
 				return;
 			}
-
-			//list of commands in local context
-			if( context == "local" )  	
+			
+			if( context == "server" )  	
+			{
+				$("#form\\:terminal_input").attr("disabled", "disabled");
+			}
+			if( context == "login" )  	
+			{
+				//TODO : some verif on login
+				login = command_id;
+				context = password;
+				$("#form\\:terminal_input").attr("type", "password");
+				context="password";
+				
+				setTimeout(function() {
+					$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-login");
+					$(".ui-terminal-prompt").addClass("ui-terminal-prompt-password");
+					$(".ui-button").trigger("click");
+				}, 30);	
+				
+			}
+			else if( context == "password" )  	
+			{
+				password = command_id;
+				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-password");
+				server();
+				context = "server";
+				$("#form\\:terminal_input").attr("type", "default");
+				
+				setTimeout(function() {
+					$("#form\\:terminal_input").val("login "+login+" "+password);
+					var press = jQuery.Event("keydown");
+					press.which = 13;
+					$("#form\\:terminal_input").trigger(press);	
+					add_elem("connection", "contacting server", false);
+					$("#form\\:terminal_input").attr("disabled", "disabled");
+					$("#form\\:terminal_input").val("");
+				}, 30);	
+			}
+			else if( context == "local" )  	
 			{
 				switch(command_id)
 				{
@@ -246,12 +327,11 @@ $(document).ready(function() {
 					errorCommand(full_command);
 				break;
 				}
+				
+				setTimeout(function() {
+						end_command();
+				}, 30);
 			}
-			
-			setTimeout(function() {
-				end_command();
-			}, 30);
-
 		}
 	});
 });
