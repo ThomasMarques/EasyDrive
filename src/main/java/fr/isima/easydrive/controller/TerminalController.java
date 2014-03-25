@@ -31,7 +31,7 @@ public class TerminalController {
 		else if(command.equals("clear") || command.equals("server") || command.equals("local"))
 			return "";
 		else if(command.equals("test"))
-			return us.getUser(1).getLogin();
+			return "test : " + us.getUser(1).getLogin();
 		else if(command.equals("login"))
 		{
 			try {
