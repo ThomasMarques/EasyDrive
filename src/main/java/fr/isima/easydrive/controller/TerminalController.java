@@ -10,6 +10,7 @@ import fr.isima.easydrive.ejb.UserService;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 
 @ManagedBean(name="terminalController")
 @SessionScoped
@@ -50,27 +51,35 @@ public class TerminalController implements Serializable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//if(connected)  
+			if(connected)
 				return "test : " + us.getUser(1).getLogin();
-			//else  
-			//	return "connection failed";
+			else
+				return "connection failed";
 		}
 		else if(command.equals("login"))
 		{
+            boolean notFound = false;
+
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			User u = new User();
-			u.setHardPass("d9f3267977c85c3d0bfc0ae6406af0313c7313f8");
-			u.setSalt("_?s>ONMVf4$yHU@%Sj$w");
+
+            User u = null;
+
+            try{
+			    u = us.getUser(params[0]);
+            }
+            catch (Exception e)
+            {
+                return "connection failed";
+            }
 			connected = true;
 			
-			if(params[0].equals("admin") && u.checkPassword(params[1]))
-				return "connection ok";
+			if(u.checkPassword(params[1]))
+				return "connection ok with db";
 			else
 				return "connection failed";
 		}
