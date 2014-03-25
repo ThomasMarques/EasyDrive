@@ -3,7 +3,8 @@ package fr.isima.easydrive.entity;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
-
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * The persistent class for the user database table.
@@ -56,12 +57,27 @@ public class User implements Serializable {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String password)
+	{
+	    if (password.equals(this.password))
+	    {
+	        return;
+	    }
+
+	    if (this.salt == null || this.salt.equals(""))
+	    {
+	    	this.salt = RandomStringUtils.randomAscii(20);
+	    }
+
+	    this.password = DigestUtils.shaHex(this.password + this.salt);
 	}
 
 	public String getSalt() {
 		return this.salt;
+	}
+	
+	public void setHardPass(String pass) {
+		this.password = pass;
 	}
 
 	public void setSalt(String salt) {
@@ -90,4 +106,8 @@ public class User implements Serializable {
 		return frontFile;
 	}
 
+	public boolean checkPassword(String givenPassword)
+	{
+	    return (this.password.equals(DigestUtils.shaHex(givenPassword + this.salt)));
+	}
 }
