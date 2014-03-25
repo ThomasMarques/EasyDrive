@@ -6,9 +6,11 @@ import javax.ejb.EJB;
 
 import fr.isima.easydrive.ejb.UserService;
 
+import java.io.Serializable;
+
 @ManagedBean(name="terminalController")
 @SessionScoped
-public class TerminalController {  
+public class TerminalController implements Serializable{
 	
 	@EJB
 	private UserService us;
