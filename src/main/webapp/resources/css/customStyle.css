@@ -102,6 +102,14 @@ span.bold
 	content: "-server: $";
 }
 
+.ui-terminal-prompt-login:AFTER {
+	content: "-login: $";
+}
+
+.ui-terminal-prompt-password:AFTER {
+	content: "-password: $";
+}
+
 .ui-terminal-prompt-local:AFTER {
 	content: "-local: $";
 }

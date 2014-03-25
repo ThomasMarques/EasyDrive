@@ -8,11 +8,11 @@ import fr.isima.easydrive.entity.User;
 
 @Singleton
 @LocalBean
-public class Services {
+public class UserService {
 
 	private UserAccessLayer userDAL;
 	
-	public Services() {
+	public UserService() {
 		userDAL = new UserAccessLayer();
 	}
 	
