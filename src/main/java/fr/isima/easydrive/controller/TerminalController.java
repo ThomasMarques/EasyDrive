@@ -35,12 +35,6 @@ public class TerminalController implements Serializable{
         }
 
 		if(command.equals("ls")) {
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			if(connected)  
 				return "Florian is the best";  
 			else  
@@ -57,17 +51,26 @@ public class TerminalController implements Serializable{
 			return "";
 		else if(command.equals("test"))
 		{
+            //latence simulation just for command test
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 			if(connected)
-				return "test : " + us.getUser(1).getLogin();
+				return "test : " + us.getUserById("1").getLogin();
 			else
 				return "connection failed";
 		}
 		else if(command.equals("login"))
 		{
             User u = null;
+            if(session != null)
+                session.invalidate();
 
             try{
-			    u = us.getUser(params[0]);
+			    u = us.getUserByLogin(  params[0]);
             }
             catch (Exception e)
             {
@@ -76,16 +79,15 @@ public class TerminalController implements Serializable{
 
 			if(u.checkPassword(params[1]))
             {
-                if(session != null)
-                    session.invalidate();
                 session = (HttpSession) context.getExternalContext().getSession(true);
                 session.setAttribute("connected", true);
                 session.setAttribute("user_id", u.getIdUser());
                 session.setAttribute("current_path", "/");
                 return "connection ok";
             }
-			else
+			else{
 				return "connection failed ";
+            }
 		}
 		else
 		{
