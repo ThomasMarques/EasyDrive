@@ -206,21 +206,22 @@ $(document).ready(function() {
 		if(context == "server"){
 			var respond = $(".ui-terminal-content").children(':last').children(':last').html();
 			var new_cpt = $(".ui-terminal-content").children().size();
+            var code = respond.substring(27, 30);
 			if( respond != null && new_cpt != base_cpt )
 			{
 				base_cpt = new_cpt;
 				$("#form\\:terminal_input").removeAttr('disabled');
 		    	$("#form\\:terminal").trigger("click");
 			}
-			
-			if( respond == "connection ok")
+
+			if(code == "200" && respond.substring(37, 44) == "Welcome")
 	    	{
 				base_cpt = 0;
 				context="server";
 		    	clear();
-	    		add_elem("connection", "connection ok.", false);
+	    		add_elem("connection", respond, false);
 	    	}
-		    else if( respond == "connection failed")
+		    else if( code == "401")
 	    	{
 		    	base_cpt = 0;
 		    	desactivate_form();
@@ -229,7 +230,7 @@ $(document).ready(function() {
 				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
 				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
 				$(".ui-button").trigger("click");
-				add_elem("connection", "connection failed, try again!", false);
+				add_elem("connection", respond, false);
 	    	}
 			
 			if( respond != null && new_cpt == base_cpt)
