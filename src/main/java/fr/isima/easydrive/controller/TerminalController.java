@@ -20,15 +20,6 @@ public class TerminalController implements Serializable{
 
     public String handleCommand(String command, String[] params) {
 
-        /////////// TO REMOVE
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        ///////////
-
         String response;
         boolean connected;
         FacesContext context = FacesContext.getCurrentInstance();
@@ -58,7 +49,7 @@ public class TerminalController implements Serializable{
 
                 if(user == null)
                 {
-                    response = "<span class=\"status-code\">[400]</span> Login `" + login + "` does not exist.";
+                    response = "<span class=\"status-code\">[401]</span> Login `" + login + "` does not exist.";
                 }
                 else
                 {
@@ -68,7 +59,7 @@ public class TerminalController implements Serializable{
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> The password does not match.";
+                        response = "<span class=\"status-code\">[401]</span> The password does not match.";
                     }
                 }
             }
