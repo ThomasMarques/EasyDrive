@@ -5,8 +5,6 @@ import org.hibernate.Session;
 
 import fr.isima.easydrive.entity.User;
 
-import java.security.InvalidParameterException;
-
 public class UserAccessLayer {
 	
 	public User getUser (Long userId) {
@@ -17,10 +15,6 @@ public class UserAccessLayer {
         User user = (User) query.uniqueResult();
 
         session.close();
-
-        if (user == null) {
-            throw new InvalidParameterException("No user found with this id.");
-        }
 
         return user;
     }

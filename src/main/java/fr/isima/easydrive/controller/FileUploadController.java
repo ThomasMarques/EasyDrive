@@ -59,14 +59,13 @@ public class FileUploadController implements Serializable {
             backFile.setLastModificationDate(now);
             backFile.setName(event.getFile().getFileName());
 
-            frontFile.setAbsPath(folder + event.getFile().getFileName());
+            fileService.persistBackFile(backFile);
+
+            frontFile.setAbsPath(folder);
             frontFile.setUser(user);
             frontFile.setBackFile(backFile);
 
-            backFile.addFrontFile(frontFile);
-
             fileService.persistFrontFile(frontFile);
-            fileService.persistBackFile(backFile);
 
             FacesMessage msg = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded in folder " + folder);
             FacesContext.getCurrentInstance().addMessage(null, msg);
