@@ -89,12 +89,36 @@ public class TerminalController implements Serializable{
 
                     for(FrontFile frontFile : listChild)
                     {
-                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "Kb>";
+                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
                     }
 
                     break;
 
                 case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side.";
+                    break;
+
+                case "rm" : response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                    break;
+
+                case "mkdir" : response = "<span class=\"status-code\">[400]</span> Not implemented => create a dir in the current folder.";
+                    break;
+
+                case "cd" : response = "<span class=\"status-code\">[400]</span> Not implemented => allows you to change the current file (relative / absolute).";
+                    break;
+
+                case "cp" : response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
+                    break;
+
+                case "get" :
+                case "download" : response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
+                    break;
+
+                case "find" :
+                case "search" : response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                    break;
+
+                case "chmod" :
+                case "share" : response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
                     break;
 
                 /// Local commands are not processed on the server side.
