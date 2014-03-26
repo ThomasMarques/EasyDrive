@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import fr.isima.easydrive.entity.User;
 
 import java.security.InvalidParameterException;
+import java.util.List;
 
 public class FileAccessLayer {
     public void persistFrontFile(FrontFile ff)
@@ -20,5 +21,41 @@ public class FileAccessLayer {
     {
         Session session = HibernateSession.getSession();
         session.persist(bf);
+    }
+
+    public List<FrontFile> getFile(String parentPath)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFileByParent");
+        query.setString("parent", parentPath);
+        List<FrontFile> files =  query.list();
+
+        session.close();
+
+        return files;
+    }
+
+    public List<FrontFile> getFolder(String parentPath)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFolderByParent");
+        query.setString("parent", parentPath);
+        List<FrontFile> files =  query.list();
+
+        session.close();
+
+        return files;
+    }
+
+    public List<FrontFile> getAll(String parentPath)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findAllByParent");
+        query.setString("parent", parentPath);
+        List<FrontFile> files =  query.list();
+
+        session.close();
+
+        return files;
     }
 }

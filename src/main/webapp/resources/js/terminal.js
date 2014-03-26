@@ -207,6 +207,10 @@ $(document).ready(function() {
 			var respond = $(".ui-terminal-content").children(':last').children(':last').html();
 			var new_cpt = $(".ui-terminal-content").children().size();
             var code = respond.substring(27, 30);
+
+            if(respond == "")
+                return;
+
 			if( respond != null && new_cpt != base_cpt )
 			{
 				base_cpt = new_cpt;

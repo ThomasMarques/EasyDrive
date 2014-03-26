@@ -6,11 +6,14 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import fr.isima.easydrive.ejb.FileService;
 import fr.isima.easydrive.ejb.UserService;
+import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 @ManagedBean(name="terminalController")
 @SessionScoped
@@ -18,6 +21,8 @@ public class TerminalController implements Serializable{
 
     @EJB
     private UserService userService;
+    @EJB
+    private FileService fileService;
 
     private User userConnected = null;
 
@@ -80,7 +85,16 @@ public class TerminalController implements Serializable{
             /// Client connected.
             switch(command)
             {
-                case "ls" : response = "<span class=\"status-code\">[200]</span> List the files in the current folder.";
+                case "ls" :
+                    String currentDir = (String)session.getAttribute("current_path");
+                    List<FrontFile> listChild = fileService.getAll(currentDir);
+                    response = "<span class=\"status-code\">[200]</span> "+currentDir;
+
+                    for(FrontFile frontFile : listChild)
+                    {
+                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "Kb>";
+                    }
+
                     break;
 
                 case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side.";
