@@ -58,6 +58,10 @@ public class TerminalController implements Serializable{
                 {
                     if(user.checkPassword(params[1]))
                     {
+                        session = (HttpSession) context.getExternalContext().getSession(true);
+                        session.setAttribute("connected", true);
+                        session.setAttribute("user_id", user.getIdUser());
+                        session.setAttribute("current_path", "/");
                         response = "<span class=\"status-code\">[200]</span> Welcome " + login + ".";
                     }
                     else
