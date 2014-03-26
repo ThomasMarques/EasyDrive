@@ -12,7 +12,6 @@ import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 import java.util.List;
 
 @ManagedBean(name="terminalController")
@@ -23,8 +22,6 @@ public class TerminalController implements Serializable{
     private UserService userService;
     @EJB
     private FileService fileService;
-
-    private User userConnected = null;
 
     public String handleCommand(String command, String[] params) {
 

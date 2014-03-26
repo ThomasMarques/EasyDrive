@@ -2,25 +2,30 @@ package fr.isima.easydrive.dao;
 
 import fr.isima.easydrive.entity.BackFile;
 import fr.isima.easydrive.entity.FrontFile;
-import org.hibernate.Query;
+
 import org.hibernate.Session;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
 
-import fr.isima.easydrive.entity.User;
-
-import java.security.InvalidParameterException;
 import java.util.List;
 
 public class FileAccessLayer {
-    public void persistFrontFile(FrontFile ff)
+    public void persistFrontFile(FrontFile frontFile)
     {
         Session session = HibernateSession.getSession();
-        session.persist(ff);
+        Transaction transaction = session.beginTransaction();
+        session.persist(frontFile);
+        transaction.commit();
+        session.close();
     }
 
-    public void persistBackFile(BackFile bf)
+    public void persistBackFile(BackFile backFile)
     {
         Session session = HibernateSession.getSession();
-        session.persist(bf);
+        Transaction transaction = session.beginTransaction();
+        session.persist(backFile);
+        transaction.commit();
+        session.close();
     }
 
     public List<FrontFile> getFile(String parentPath)
