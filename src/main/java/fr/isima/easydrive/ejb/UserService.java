@@ -6,6 +6,8 @@ import javax.ejb.Singleton;
 import fr.isima.easydrive.dao.UserAccessLayer;
 import fr.isima.easydrive.entity.User;
 
+import java.security.InvalidParameterException;
+
 @Singleton
 @LocalBean
 public class UserService {

@@ -117,3 +117,7 @@ span.bold
 .error{
 	color: #f00;	
 }
+
+.status-code{
+    color: #fffc00;
+}

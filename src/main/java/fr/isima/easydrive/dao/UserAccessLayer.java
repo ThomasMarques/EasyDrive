@@ -35,10 +35,6 @@ public class UserAccessLayer {
 
         session.close();
 
-        if (user == null) {
-            throw new InvalidParameterException("No user found with this login.");
-        }
-
         return user;
     }
 	
