@@ -32,3 +32,5 @@ CREATE TABLE IF NOT EXISTS `user` (
 ALTER TABLE `front_file`
   ADD CONSTRAINT `front_file_ibfk_2` FOREIGN KEY (`id_owner`) REFERENCES `user` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `front_file_ibfk_1` FOREIGN KEY (`id_back_file`) REFERENCES `back_file` (`id_back_file`) ON DELETE CASCADE ON UPDATE CASCADE;
+  
+ALTER TABLE  `back_file` CHANGE  `hash`  `hash` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL ;
