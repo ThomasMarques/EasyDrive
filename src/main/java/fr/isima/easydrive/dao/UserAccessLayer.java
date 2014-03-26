@@ -9,7 +9,7 @@ import java.security.InvalidParameterException;
 
 public class UserAccessLayer {
 	
-	public User getUser (long userId) {
+	public User getUser (Long userId) {
         Session session = HibernateSession.getSession();
         Query query = session.getNamedQuery("User.findById");
         query.setLong("idUser", userId);

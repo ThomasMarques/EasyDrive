@@ -18,7 +18,7 @@ public class UserService {
 		userDAL = new UserAccessLayer();
 	}
 	
-	public User getUser (long userId) {
+	public User getUser (Long userId) {
         return userDAL.getUser(userId);
     }
 	

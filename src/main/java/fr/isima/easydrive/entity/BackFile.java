@@ -2,6 +2,7 @@ package fr.isima.easydrive.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class BackFile implements Serializable {
 	private List<FrontFile> frontFiles;
 
 	public BackFile() {
+        frontFiles = new ArrayList<FrontFile>();
 	}
 
 	public String getIdBackFile() {
@@ -111,8 +113,6 @@ public class BackFile implements Serializable {
 
 	public FrontFile addFrontFile(FrontFile frontFile) {
 		getFrontFiles().add(frontFile);
-		frontFile.setBackFile(this);
-
 		return frontFile;
 	}
 

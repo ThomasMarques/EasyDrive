@@ -3,6 +3,8 @@ package fr.isima.easydrive.controller;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 import fr.isima.easydrive.ejb.UserService;
 import fr.isima.easydrive.entity.User;
@@ -31,13 +33,30 @@ public class TerminalController implements Serializable{
         ///////////
 
         String response;
+        boolean connected;
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpSession session = null;
 
-        if(userConnected == null)
+        try
+        {
+            session = (HttpSession) context.getExternalContext().getSession(false);
+            connected = (boolean)session.getAttribute("connected");
+        }
+        catch (NullPointerException e)
+        {
+            connected = false;
+        }
+
+        if(!connected)
         {
             /// Client not connected.
             if(command.equals("login"))
             {
                 String login = params[0];
+
+                if(session != null)
+                    session.invalidate();
+
                 User user = userService.getUser(login);
 
                 if(user == null)
@@ -49,7 +68,6 @@ public class TerminalController implements Serializable{
                     if(user.checkPassword(params[1]))
                     {
                         response = "<span class=\"status-code\">[200]</span> Welcome " + login + ".";
-                        userConnected = user;
                     }
                     else
                     {

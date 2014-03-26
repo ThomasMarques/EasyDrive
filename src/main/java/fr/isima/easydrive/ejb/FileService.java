@@ -16,5 +16,14 @@ public class FileService {
 	public FileService() {
 		fileDAL = new FileAccessLayer();
 	}
-	
+
+    public void persistFrontFile(FrontFile ff)
+    {
+        fileDAL.persistFrontFile(ff);
+    }
+
+    public void persistBackFile(BackFile bf)
+    {
+        fileDAL.persistBackFile(bf);
+    }
 }
