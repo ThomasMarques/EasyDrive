@@ -10,7 +10,6 @@ import fr.isima.easydrive.ejb.UserService;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 
 @ManagedBean(name="terminalController")
 @SessionScoped
@@ -18,8 +17,6 @@ public class TerminalController implements Serializable{
 
     @EJB
     private UserService userService;
-
-    private User userConnected = null;
 
     public String handleCommand(String command, String[] params) {
 
