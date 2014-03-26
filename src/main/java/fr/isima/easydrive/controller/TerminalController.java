@@ -3,14 +3,13 @@ package fr.isima.easydrive.controller;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.ejb.EJB;
-
-import org.apache.commons.codec.digest.DigestUtils;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 import fr.isima.easydrive.ejb.UserService;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 
 @ManagedBean(name="terminalController")
 @SessionScoped
@@ -18,9 +17,23 @@ public class TerminalController implements Serializable{
 	
 	@EJB
 	private UserService us;
-	private boolean connected = false;
-	
+
 	public String handleCommand(String command, String[] params) {
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpSession session = null;
+        boolean connected;
+
+        try
+        {
+            session = (HttpSession) context.getExternalContext().getSession(false);
+            connected = (boolean)session.getAttribute("connected");
+        }
+        catch (NullPointerException e)
+        {
+            connected = false;
+        }
+
 		if(command.equals("ls")) {
 			try {
 				Thread.sleep(2000);
@@ -44,13 +57,6 @@ public class TerminalController implements Serializable{
 			return "";
 		else if(command.equals("test"))
 		{
-			System.out.println("test controller");
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			if(connected)
 				return "test : " + us.getUser(1).getLogin();
 			else
@@ -58,15 +64,6 @@ public class TerminalController implements Serializable{
 		}
 		else if(command.equals("login"))
 		{
-            boolean notFound = false;
-
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
             User u = null;
 
             try{
@@ -76,21 +73,22 @@ public class TerminalController implements Serializable{
             {
                 return "connection failed";
             }
-			connected = true;
-			
+
 			if(u.checkPassword(params[1]))
-				return "connection ok with db";
+            {
+                if(session != null)
+                    session.invalidate();
+                session = (HttpSession) context.getExternalContext().getSession(true);
+                session.setAttribute("connected", true);
+                session.setAttribute("user_id", u.getIdUser());
+                session.setAttribute("current_path", "/");
+                return "connection ok";
+            }
 			else
-				return "connection failed";
+				return "connection failed ";
 		}
-		else  
+		else
 		{
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			if(connected)
 				return "is not a server command.";  
 			else
