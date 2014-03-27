@@ -19,11 +19,11 @@ public class UserService {
 	}
 	
 	public User getUserById(String userId) {
-        return userDAL.getUser(userId);
+        return userDAL.getUserById(userId);
     }
 	
 	public User getUserByLogin(String login) {
-		return userDAL.getUser(login);
+		return userDAL.getUserByLogin(login);
     }
 	
 }

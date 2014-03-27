@@ -95,4 +95,17 @@ public class FileAccessLayer {
 
         return false;
     }
+
+    public List<FrontFile> search(String nameToSearch, String currentDir)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.Search");
+        query.setString("nameToSearch", "%"+nameToSearch+"%");
+        query.setString("path", currentDir+"%");
+        List<FrontFile> files =  query.list();
+
+        session.close();
+
+        return files;
+    }
 }

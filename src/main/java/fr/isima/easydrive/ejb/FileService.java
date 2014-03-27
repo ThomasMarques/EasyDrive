@@ -6,6 +6,7 @@ import javax.ejb.Singleton;
 import fr.isima.easydrive.dao.FileAccessLayer;
 import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.BackFile;
+import fr.isima.easydrive.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,27 +33,30 @@ public class FileService {
 
     public List<FrontFile> getFiles(String parentPath, String ownerId)
     {
+        parentPath = getRealPath(parentPath);
         return fileDAL.getFiles(parentPath, ownerId);
     }
 
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
+        parentPath = getRealPath(parentPath);
         return fileDAL.getAll(parentPath, ownerId);
     }
 
     public boolean folderExist(String path, String ownerId)
     {
+        path = getRealPath(path);
         return fileDAL.folderExist(path, ownerId);
     }
 
     public boolean fileExist(String path, String name, String ownerId)
     {
+        path = getRealPath(path);
         return fileDAL.fileExist(path, name, ownerId, false);
     }
 
     public String getAbsolutePath(String path, String currentPath)
     {
-
         //relative
         if(!path.substring(0,1).equals("/"))
         {
@@ -108,5 +112,39 @@ public class FileService {
 
         path += "/";
         return path;
+    }
+
+    public String getRealPath(String path)
+    {
+        //TODO : get real
+        return path;
+    }
+
+    public int createDir(String folder, String dirName, User user)
+    {
+        dirName = getRealPath(dirName);
+        if(folderExist(folder+dirName+"/", user.getIdUser()))
+            return -1;
+
+        BackFile backFile = new BackFile();
+        FrontFile newFrontFile = new FrontFile();
+
+        backFile.setName(dirName);
+        backFile.setSize(0);
+
+        fileDAL.persistBackFile(backFile);
+
+        newFrontFile.setAbsPath(folder);
+        newFrontFile.setUser(user);
+        newFrontFile.setBackFile(backFile);
+
+        fileDAL.persistFrontFile(newFrontFile);
+        return 0;
+    }
+
+    public List<FrontFile> search(String nameToSearch, String currentDir)
+    {
+        currentDir = getRealPath(currentDir);
+        return fileDAL.search(nameToSearch, currentDir);
     }
 }

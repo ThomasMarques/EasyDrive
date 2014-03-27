@@ -79,8 +79,8 @@ public class TerminalController implements Serializable{
         }
         else
         {
-            String currentDir = (String)session.getAttribute("current_path");
             /// Client connected.
+            String currentDir = (String)session.getAttribute("current_path");
             switch(command)
             {
                 case "cd" :
@@ -102,6 +102,7 @@ public class TerminalController implements Serializable{
                     break;
                 case "ls" :
                     List<FrontFile> listChild = fileService.getAll(currentDir, (String)session.getAttribute("user_id"));
+
                     response = "<span class=\"status-code\">[200]</span> "+currentDir;
 
                     for(FrontFile frontFile : listChild)
@@ -111,16 +112,127 @@ public class TerminalController implements Serializable{
 
                     break;
 
-                case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side.";
+                case "pwd" :
+                    if(params.length == 0)
+                    {
+                        response = "<span class=\"status-code\">[200]</span> Server side : " + currentDir;
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `pwd`.";
+                    }
                     break;
 
-                /// Local commands are not processed on the server side.
+                case "rm" :
+                    if(params.length == 1)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
+                    }
+                    break;
+
+                case "mkdir" :
+                    if(params.length == 1)
+                    {
+                        String idUser = (String) session.getAttribute("user_id");
+                        User user = userService.getUserById(idUser);
+
+                        int requestResult = fileService.createDir(currentDir, params[0], user);
+                        /// Response analyser.
+                        if(requestResult == 0)
+                        {
+                            response = "<span class=\"status-code\">[201]</span> Directory created.";
+                        }
+                        else if(requestResult == -1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Directory not created, directory with this name already exist.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Directory not created.";
+                        }
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `mkdir nameForNewDirectory`.";
+                    }
+
+                    break;
+                case "cp" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cp nameOfFileOrDirectoryToCopy location`.";
+                    }
+                    break;
+
+                case "mv" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => move the file (param1) in the folder (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `mv nameOfFileOrDirectoryToMove newLocation`.";
+                    }
+                    break;
+
+                case "get" :
+                case "download" :
+                    if(params.length == 1)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `download (or get) nameOfFileOrDirectoryToDownload`.";
+                    }
+                    break;
+
+                case "find" :
+                case "search" :
+                    if(params.length == 1 || params.length == 2)
+                    {
+                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"");
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) -a nameToSearch` to search in your all content.";
+                    }
+                    break;
+
+                case "chmod" :
+                case "share" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `share (or chmod) nameOfFileOrDirectoryToShare userLogin`.";
+                    }
+                    break;
+
+                ///
+                case "add" :
+                case "push" :
+                case "status" : response = "<span class=\"status-code\">[404]</span> `" + command + "` is not a server command but a client command. ";
+                    break;
+
+                /// These local commands are not processed on the server side.
                 case "local" :
                 case "server" :
                 case "clear" : response = "";
                     break;
 
-                default :   response = "<span class=\"status-code\">[400]</span> `" + command + "` is not a server command.";
+                default :   response = "<span class=\"status-code\">[404]</span> `" + command + "` is not a server command.";
                     break;
             }
         }

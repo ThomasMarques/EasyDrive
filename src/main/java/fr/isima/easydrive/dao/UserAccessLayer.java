@@ -7,10 +7,10 @@ import fr.isima.easydrive.entity.User;
 
 public class UserAccessLayer {
 	
-	public User getUser (Long userId) {
+	public User getUserById (String userId) {
         Session session = HibernateSession.getSession();
         Query query = session.getNamedQuery("User.findById");
-        query.setLong("idUser", userId);
+        query.setString("idUser", userId);
 
         User user = (User) query.uniqueResult();
 
@@ -19,7 +19,7 @@ public class UserAccessLayer {
         return user;
     }
 	
-	public User getUser (String login) {
+	public User getUserByLogin (String login) {
 
         Session session = HibernateSession.getSession();
         Query query = session.getNamedQuery("User.findByLogin");
