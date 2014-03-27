@@ -94,10 +94,18 @@ public class TerminalController implements Serializable{
 
                     break;
 
-                case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side.";
+                case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side : " + currentDir + "";
                     break;
 
-                case "rm" : response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                case "rm" :
+                    if(params.length == 1)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
+                    }
                     break;
 
                 case "mkdir" :
@@ -131,22 +139,71 @@ public class TerminalController implements Serializable{
                 case "cd" : response = "<span class=\"status-code\">[400]</span> Not implemented => allows you to change the current file (relative / absolute).";
                     break;
 
-                case "cp" : response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
+                case "cp" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cp nameOfFileOrDirectoryToCopy location`.";
+                    }
+                    break;
+
+                case "mv" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => move the file (param1) in the folder (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `mv nameOfFileOrDirectoryToMove newLocation`.";
+                    }
                     break;
 
                 case "get" :
-                case "download" : response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
+                case "download" :
+                    if(params.length == 1)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `download (or get) nameOfFileOrDirectoryToDownload`.";
+                    }
                     break;
 
                 case "find" :
-                case "search" : response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                case "search" :
+                    if(params.length == 1)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameOfFileOrDirectoryToSearch`.";
+                    }
                     break;
 
                 case "chmod" :
-                case "share" : response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
+                case "share" :
+                    if(params.length == 2)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `share (or chmod) nameOfFileOrDirectoryToShare userLogin`.";
+                    }
                     break;
 
-                /// Local commands are not processed on the server side.
+                ///
+                case "add" :
+                case "push" :
+                case "status" : response = "<span class=\"status-code\">[400]</span> `" + command + "` is not a server command but a client command. ";
+                    break;
+
+                /// These local commands are not processed on the server side.
                 case "local" :
                 case "server" :
                 case "clear" : response = "";
