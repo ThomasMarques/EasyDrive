@@ -13,7 +13,9 @@ import java.util.List;
  */
 @Entity
 @Table(name="back_file")
-@NamedQuery(name="BackFile.findAll", query="SELECT b FROM BackFile b")
+@NamedQueries({
+        @NamedQuery(name="BackFile.findAll", query="SELECT b FROM BackFile b")
+})
 public class BackFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -45,6 +47,10 @@ public class BackFile implements Serializable {
 
 	public BackFile() {
         frontFiles = new ArrayList<FrontFile>();
+        hash = null;
+        data = null;
+        creationDate = null;
+        lastModificationDate = null;
 	}
 
 	public String getIdBackFile() {

@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 import java.util.List;
 
 public class FileAccessLayer {
+
     public void persistFrontFile(FrontFile frontFile)
     {
         Session session = HibernateSession.getSession();

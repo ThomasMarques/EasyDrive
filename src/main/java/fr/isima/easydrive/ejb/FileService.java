@@ -6,6 +6,7 @@ import javax.ejb.Singleton;
 import fr.isima.easydrive.dao.FileAccessLayer;
 import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.BackFile;
+import fr.isima.easydrive.entity.User;
 
 import java.util.List;
 
@@ -42,5 +43,23 @@ public class FileService {
     public List<FrontFile> getAll(String parentPath)
     {
         return fileDAL.getAll(parentPath);
+    }
+
+    public int createDir(String folder, String dirName, User user)
+    {
+        BackFile backFile = new BackFile();
+        FrontFile frontFile = new FrontFile();
+
+        backFile.setName(dirName);
+        backFile.setSize(0);
+
+        fileDAL.persistBackFile(backFile);
+
+        frontFile.setAbsPath(folder);
+        frontFile.setUser(user);
+        frontFile.setBackFile(backFile);
+
+        fileDAL.persistFrontFile(frontFile);
+        return 0;
     }
 }

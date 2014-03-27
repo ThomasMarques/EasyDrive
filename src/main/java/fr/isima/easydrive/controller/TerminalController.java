@@ -80,10 +80,10 @@ public class TerminalController implements Serializable{
         else
         {
             /// Client connected.
+            String currentDir = (String)session.getAttribute("current_path");
             switch(command)
             {
                 case "ls" :
-                    String currentDir = (String)session.getAttribute("current_path");
                     List<FrontFile> listChild = fileService.getAll(currentDir);
                     response = "<span class=\"status-code\">[200]</span> "+currentDir;
 
@@ -100,7 +100,31 @@ public class TerminalController implements Serializable{
                 case "rm" : response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
                     break;
 
-                case "mkdir" : response = "<span class=\"status-code\">[400]</span> Not implemented => create a dir in the current folder.";
+                case "mkdir" :
+                    if(params.length == 1)
+                    {
+                        Long idUser = Long.parseLong((String) session.getAttribute("user_id"));
+                        User user = userService.getUser(idUser);
+
+                        int requestResult = fileService.createDir(currentDir, params[0], user);
+                        if(requestResult == 0)
+                        {
+                            response = "<span class=\"status-code\">[201]</span> Directory created.";
+                        }
+                        else if(requestResult == 1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Directory not created, directory with this name already exist.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Directory not created.";
+                        }
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `mkdir nameForNewDirectory`.";
+                    }
+
                     break;
 
                 case "cd" : response = "<span class=\"status-code\">[400]</span> Not implemented => allows you to change the current file (relative / absolute).";
