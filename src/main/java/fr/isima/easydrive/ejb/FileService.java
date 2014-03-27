@@ -4,6 +4,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
 import fr.isima.easydrive.dao.FileAccessLayer;
+import fr.isima.easydrive.dao.UserAccessLayer;
 import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.BackFile;
 import fr.isima.easydrive.entity.User;
@@ -15,10 +16,12 @@ import java.util.List;
 @LocalBean
 public class FileService {
 
-	private FileAccessLayer fileDAL;
+    private FileAccessLayer fileDAL;
+    private UserAccessLayer userDAL;
 	
 	public FileService() {
-		fileDAL = new FileAccessLayer();
+        fileDAL = new FileAccessLayer();
+        userDAL = new UserAccessLayer();
 	}
 
     public void persistFrontFile(FrontFile ff)
@@ -33,25 +36,45 @@ public class FileService {
 
     public List<FrontFile> getFiles(String parentPath, String ownerId)
     {
-        parentPath = getRealPath(parentPath);
+        List<String> dirAndOwner = getRealPathAndOwner(parentPath);
+        if(dirAndOwner.size() == 2)
+        {
+            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        parentPath = dirAndOwner.get(0);
         return fileDAL.getFiles(parentPath, ownerId);
     }
 
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
-        parentPath = getRealPath(parentPath);
+        List<String> dirAndOwner = getRealPathAndOwner(parentPath);
+        if(dirAndOwner.size() == 2)
+        {
+            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        parentPath = dirAndOwner.get(0);
         return fileDAL.getAll(parentPath, ownerId);
     }
 
     public boolean folderExist(String path, String ownerId)
     {
-        path = getRealPath(path);
+        List<String> dirAndOwner = getRealPathAndOwner(path);
+        if(dirAndOwner.size() == 2)
+        {
+            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        path = dirAndOwner.get(0);
         return fileDAL.folderExist(path, ownerId);
     }
 
     public boolean fileExist(String path, String name, String ownerId)
     {
-        path = getRealPath(path);
+        List<String> dirAndOwner = getRealPathAndOwner(path);
+        if(dirAndOwner.size() == 2)
+        {
+            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        path = dirAndOwner.get(0);
         return fileDAL.fileExist(path, name, ownerId, false);
     }
 
@@ -114,16 +137,37 @@ public class FileService {
         return path;
     }
 
-    public String getRealPath(String path)
+    public List<String> getRealPathAndOwner(String path)
     {
-        //TODO : get real
-        return path;
+        List<String> pathAndOwner = new ArrayList<String>();
+        if(path.startsWith("/share/"))
+        {
+            System.out.println(path);
+            int index = nthOccurrence(path, '/', 4);
+            if(index != -1)
+            {
+                String link = path.substring(0, index);
+                System.out.println(link);
+                String additionalPath = path.substring(index);
+                System.out.println(additionalPath);
+                /// add the user
+                pathAndOwner.add(path.split("/")[1]);
+                System.out.println(path.split("/")[1]);
+            }
+        }
+        pathAndOwner.add(0, path);
+
+        return pathAndOwner;
     }
 
-    public int createDir(String folder, String dirName, User user)
+    public int createDir(String folder, String dirName, String userId)
     {
-        dirName = getRealPath(dirName);
-        if(folderExist(folder+dirName+"/", user.getIdUser()))
+        List<String> dirAndOwner = getRealPathAndOwner(dirName);
+        if(dirAndOwner.size() == 2)
+        {
+            userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        if(folderExist(folder+dirName+"/", userId))
             return -1;
 
         BackFile backFile = new BackFile();
@@ -135,16 +179,28 @@ public class FileService {
         fileDAL.persistBackFile(backFile);
 
         newFrontFile.setAbsPath(folder);
-        newFrontFile.setUser(user);
+        newFrontFile.setUser(userDAL.getUserById(userId));
         newFrontFile.setBackFile(backFile);
 
         fileDAL.persistFrontFile(newFrontFile);
         return 0;
     }
 
-    public List<FrontFile> search(String nameToSearch, String currentDir)
+    public List<FrontFile> search(String nameToSearch, String currentDir, String userId)
     {
-        currentDir = getRealPath(currentDir);
-        return fileDAL.search(nameToSearch, currentDir);
+        List<String> dirAndOwner = getRealPathAndOwner(currentDir);
+        if(dirAndOwner.size() == 2)
+        {
+            userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        }
+        currentDir = dirAndOwner.get(0);
+        return fileDAL.search(nameToSearch, currentDir, userId);
+    }
+
+    private static int nthOccurrence(String str, char c, int n) {
+        int pos = str.indexOf(c, 0);
+        while (n-- > 0 && pos != -1)
+            pos = str.indexOf(c, pos+1);
+        return pos;
     }
 }

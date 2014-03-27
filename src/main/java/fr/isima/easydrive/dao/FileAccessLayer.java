@@ -60,7 +60,7 @@ public class FileAccessLayer {
         int length = path.length();
         int index = path.substring(0, length-1).lastIndexOf('/');
         String absolutePath = path.substring( 0, index+1 );
-        String name = path.substring( index+1, length-1 );
+        String name = path.substring(index + 1, length - 1);
 
         return fileExist(absolutePath, name, ownerId, true);
     }
@@ -72,36 +72,20 @@ public class FileAccessLayer {
         {
             if(file.getBackFile().getName().equals(name))
             {
-                if( isFolder )
-                {
-                    if(file.getBackFile().getData() == null)
-                    {
-                        return true;
-                    }
-                    else
-                        return false;
-                }
-                else
-                {
-                    if(file.getBackFile().getData() != null)
-                    {
-                        return true;
-                    }
-                    else
-                        return false;
-                }
+                return file.isDirectory() == isFolder;
             }
         }
 
         return false;
     }
 
-    public List<FrontFile> search(String nameToSearch, String currentDir)
+    public List<FrontFile> search(String nameToSearch, String currentDir, String userId)
     {
         Session session = HibernateSession.getSession();
         Query query = session.getNamedQuery("FrontFile.Search");
         query.setString("nameToSearch", "%"+nameToSearch+"%");
         query.setString("path", currentDir+"%");
+        query.setString("userId", userId);
         List<FrontFile> files =  query.list();
 
         session.close();

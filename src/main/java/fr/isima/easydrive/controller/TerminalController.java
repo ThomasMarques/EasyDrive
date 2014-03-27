@@ -81,33 +81,41 @@ public class TerminalController implements Serializable{
         {
             /// Client connected.
             String currentDir = (String)session.getAttribute("current_path");
+            String userId = (String)session.getAttribute("user_id");
             switch(command)
             {
                 case "cd" :
-                    String path = params[0];
-
-                    //absolute path
-                    path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
-
-                    if(path != null && fileService.folderExist(path, (String)session.getAttribute("user_id")))
+                    if(params.length == 1)
                     {
+                        String path = params[0];
+                        //get absolute path
+                        path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
 
-                        session.setAttribute("current_path", path);
-                        response = "<span class=\"status-code\">[200]</span> " + path ;
+                        if(path != null && fileService.folderExist(path, userId))
+                        {
+                            session.setAttribute("current_path", path);
+                            response = "<span class=\"status-code\">[200]</span> " + path ;
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The given path `" + params[0] + "` is not a directory or doesn't exist.";
+                        }
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> given path doesn't exist : " + params[0] ;
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cd directoryPath`, the path may be relative or absolute.";
                     }
                     break;
                 case "ls" :
-                    List<FrontFile> listChild = fileService.getAll(currentDir, (String)session.getAttribute("user_id"));
-
-                    response = "<span class=\"status-code\">[200]</span> "+currentDir;
-
-                    for(FrontFile frontFile : listChild)
+                    if(params.length == 0)
                     {
-                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+                        List<FrontFile> listChild = fileService.getAll(currentDir, userId);
+                        response = "<span class=\"status-code\">[200]</span> "+currentDir;
+                        response += formateListFiles(listChild);
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `ls`.";
                     }
 
                     break;
@@ -137,10 +145,7 @@ public class TerminalController implements Serializable{
                 case "mkdir" :
                     if(params.length == 1)
                     {
-                        String idUser = (String) session.getAttribute("user_id");
-                        User user = userService.getUserById(idUser);
-
-                        int requestResult = fileService.createDir(currentDir, params[0], user);
+                        int requestResult = fileService.createDir(currentDir, params[0], userId);
                         /// Response analyser.
                         if(requestResult == 0)
                         {
@@ -199,7 +204,7 @@ public class TerminalController implements Serializable{
                 case "search" :
                     if(params.length == 1 || params.length == 2)
                     {
-                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"");
+                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"", userId);
                         response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
                     }
                     else
@@ -238,5 +243,21 @@ public class TerminalController implements Serializable{
         }
 
         return response;
+    }
+
+    String formateListFiles(List<FrontFile> filesList)
+    {
+        String files = "";
+        String directories = "";
+
+        for(FrontFile frontFile : filesList)
+        {
+            String formatedLine = "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+            if(frontFile.isDirectory())
+                directories += formatedLine;
+            else
+                files += formatedLine;
+        }
+        return directories + files;
     }
 }   
