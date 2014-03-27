@@ -252,11 +252,10 @@ public class TerminalController implements Serializable{
 
         for(FrontFile frontFile : filesList)
         {
-            String formatedLine = "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
             if(frontFile.isDirectory())
-                directories += formatedLine;
+                directories += "<br/>d-  " + frontFile.getBackFile().getName();
             else
-                files += formatedLine;
+                files += "<br/>-- " + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
         }
         return directories + files;
     }

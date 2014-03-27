@@ -13,7 +13,8 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name="FrontFile.findAll", query="SELECT f FROM FrontFile f "),
     @NamedQuery(name="FrontFile.findFileByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
-    @NamedQuery(name="FrontFile.findAllByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id")
+    @NamedQuery(name="FrontFile.findAllByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
+    @NamedQuery(name="FrontFile.findFileByName", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :path AND id_owner = :owner_id AND f.backFile.name LIKE :name"),
     //@NamedQuery(name="FrontFile.Search", query="SELECT f FROM FrontFile f, BackFile b WHERE b.name LIKE :nameToSearch AND b.id_back_file = f.id_back_file AND f.abs_path LIKE :path :userId")
 })
 public class FrontFile implements Serializable {

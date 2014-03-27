@@ -42,6 +42,20 @@ public class FileAccessLayer {
         return files;
     }
 
+    public FrontFile getFile(String path, String name, String ownerId)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFileByName");
+        query.setString("path", path);
+        query.setString("name", name);
+        query.setString("owner_id", ownerId);
+        FrontFile file = (FrontFile)query.uniqueResult();
+
+        session.close();
+
+        return file;
+    }
+
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
         Session session = HibernateSession.getSession();

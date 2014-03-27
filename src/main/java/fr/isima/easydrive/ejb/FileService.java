@@ -9,6 +9,7 @@ import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.BackFile;
 import fr.isima.easydrive.entity.User;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,6 +154,15 @@ public class FileService {
                 /// add the user
                 pathAndOwner.add(path.split("/")[1]);
                 System.out.println(path.split("/")[1]);
+
+                FrontFile linkFile = fileDAL.getFile(link, "", "symlink");
+                if(linkFile.getSharePath() == null)
+                {
+                    throw new InvalidParameterException();
+                }
+
+                path = linkFile.getSharePath() + additionalPath;
+                System.out.println(path);
             }
         }
         pathAndOwner.add(0, path);

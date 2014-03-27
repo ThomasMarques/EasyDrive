@@ -204,20 +204,22 @@ $(document).ready(function() {
 	base_cpt = 0;
 	$(document).bind("DOMSubtreeModified", function(evt) {
 		if(context == "server"){
-			var respond = $(".ui-terminal-content").children(':last').children(':last').html();
-			var new_cpt = $(".ui-terminal-content").children().size();
-            var code = respond.substring(27, 30);
+            var terminalContent = $(".ui-terminal-content");
+			var respond = terminalContent.children(':last').children(':last').html();
+			var new_cpt = terminalContent.children().size();
+            var code;
 
-            if(respond == "")
+            if(respond == null || respond == "" || respond.length < 44)
                 return;
 
-			if( respond != null && new_cpt != base_cpt )
+			if( new_cpt != base_cpt )
 			{
 				base_cpt = new_cpt;
 				$("#form\\:terminal_input").removeAttr('disabled');
 		    	$("#form\\:terminal").trigger("click");
 			}
 
+            code = respond.substring(27, 30);
 			if(code == "200" && respond.substring(37, 44) == "Welcome")
 	    	{
 				base_cpt = 0;
