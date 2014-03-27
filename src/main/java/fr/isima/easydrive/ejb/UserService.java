@@ -18,11 +18,11 @@ public class UserService {
 		userDAL = new UserAccessLayer();
 	}
 	
-	public User getUser (Long userId) {
+	public User getUserById(String userId) {
         return userDAL.getUser(userId);
     }
 	
-	public User getUser (String login) {
+	public User getUserByLogin(String login) {
 		return userDAL.getUser(login);
     }
 	

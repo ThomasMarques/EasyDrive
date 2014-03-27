@@ -46,10 +46,10 @@ public class FileUploadController implements Serializable {
         if(connected)
         {
             String folder = (String)session.getAttribute("current_path");
-            Long idUser = Long.parseLong((String) session.getAttribute("user_id"));
+            String idUser = (String) session.getAttribute("user_id");
             Date now = new Date();
 
-            User user = userService.getUser(idUser);
+            User user = userService.getUserById(idUser);
             FrontFile frontFile = new FrontFile();
             BackFile backFile = new BackFile();
 

@@ -50,7 +50,7 @@ public class TerminalController implements Serializable{
                 if(session != null)
                     session.invalidate();
 
-                User user = userService.getUser(login);
+                User user = userService.getUserByLogin(login);
 
                 if(user == null)
                 {
@@ -79,17 +79,34 @@ public class TerminalController implements Serializable{
         }
         else
         {
+            String currentDir = (String)session.getAttribute("current_path");
             /// Client connected.
             switch(command)
             {
+                case "cd" :
+                    String path = params[0];
+
+                    //absolute path
+                    path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
+
+                    if(path != null && fileService.folderExist(path, (String)session.getAttribute("user_id")))
+                    {
+
+                        session.setAttribute("current_path", path);
+                        response = "<span class=\"status-code\">[200]</span> " + path ;
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> given path doesn't exist : " + params[0] ;
+                    }
+                    break;
                 case "ls" :
-                    String currentDir = (String)session.getAttribute("current_path");
-                    List<FrontFile> listChild = fileService.getAll(currentDir);
+                    List<FrontFile> listChild = fileService.getAll(currentDir, (String)session.getAttribute("user_id"));
                     response = "<span class=\"status-code\">[200]</span> "+currentDir;
 
                     for(FrontFile frontFile : listChild)
                     {
-                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "Kb>";
+                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
                     }
 
                     break;
