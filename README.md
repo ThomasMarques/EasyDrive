@@ -3,6 +3,14 @@ ZZDrive
 
 CONNECTION DEV:
 
-login : admin
+User : Florian Rotagnon (Student)
+login : flrotagnon
+pass : flrotagnon
 
-pass : admin
+User : Thomas Marques (Student)
+login : thmarques
+pass : thmarques
+
+User : Pierre Johan Chartre (Teacher)
+login : pjchartre
+pass : pjchartre

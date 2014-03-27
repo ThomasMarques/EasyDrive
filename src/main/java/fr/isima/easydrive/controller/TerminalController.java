@@ -213,11 +213,35 @@ public class TerminalController implements Serializable{
                     }
                     break;
 
-                case "chmod" :
                 case "share" :
+                case "chmod" :
                     if(params.length == 2)
                     {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
+                        int serviceResponse = fileService.share(currentDir, params[0], params[1], userId);
+                        if(serviceResponse == 0)
+                        {
+                            response = "<span class=\"status-code\">[201]</span> Shared.";
+                        }
+                        else if(serviceResponse == -1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> File or directory `" + params[0] + "` doesn't exist.";
+                        }
+                        else if(serviceResponse == -2)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> User `" + params[0] + "` doesn't exist.";
+                        }
+                        else if(serviceResponse == -3)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> File or directory `" + params[0] + "` already shared with this user.";
+                        }
+                        else if(serviceResponse == -4)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The file or folder does not belong to you, only the owner can share it.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Unable to share the file or folder `" + params[0] + "` with the user `" + params[1] + "`.";
+                        }
                     }
                     else
                     {

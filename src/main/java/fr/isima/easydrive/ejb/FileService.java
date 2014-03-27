@@ -138,7 +138,7 @@ public class FileService {
         return path;
     }
 
-    public List<String> getRealPathAndOwner(String path)
+    private List<String> getRealPathAndOwner(String path)
     {
         List<String> pathAndOwner = new ArrayList<String>();
         if(path.startsWith("/share/"))
@@ -205,6 +205,35 @@ public class FileService {
         }
         currentDir = dirAndOwner.get(0);
         return fileDAL.search(nameToSearch, currentDir, userId);
+    }
+
+    public int share(String currentDir, String name, String userLogin, String ownerId)
+    {
+        User user = userDAL.getUserByLogin(userLogin);
+        if(user == null)
+            return -2;
+
+        List<String> dirAndOwner = getRealPathAndOwner(currentDir);
+        if(dirAndOwner.size() == 2)
+            return -4;
+
+        System.out.println(currentDir + name);
+
+        if(fileExist(currentDir, name, ownerId))
+        {
+            /// Partage d'un fichier
+
+        }
+        else if(folderExist(currentDir + name + "/", ownerId))
+        {
+            /// Partage d'un dossier
+
+        }
+        else
+        {
+            return -1;
+        }
+        return 0;
     }
 
     private static int nthOccurrence(String str, char c, int n) {
