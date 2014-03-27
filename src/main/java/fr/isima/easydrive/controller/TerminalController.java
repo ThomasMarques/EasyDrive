@@ -94,7 +94,15 @@ public class TerminalController implements Serializable{
 
                     break;
 
-                case "pwd" : response = "<span class=\"status-code\">[200]</span> Server side : " + currentDir + "";
+                case "pwd" :
+                    if(params.length == 0)
+                    {
+                        response = "<span class=\"status-code\">[200]</span> Server side : " + currentDir;
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `pwd`.";
+                    }
                     break;
 
                 case "rm" :
