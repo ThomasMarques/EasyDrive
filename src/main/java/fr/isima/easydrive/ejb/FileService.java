@@ -68,4 +68,9 @@ public class FileService {
         fileDAL.persistFrontFile(newFrontFile);
         return 0;
     }
+
+    public List<FrontFile> search(String nameToSearch, String currentDir)
+    {
+        return fileDAL.search(nameToSearch, currentDir);
+    }
 }

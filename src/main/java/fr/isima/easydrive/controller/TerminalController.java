@@ -183,13 +183,14 @@ public class TerminalController implements Serializable{
 
                 case "find" :
                 case "search" :
-                    if(params.length == 1)
+                    if(params.length == 1 || params.length == 2)
                     {
+                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"");
                         response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameOfFileOrDirectoryToSearch`.";
+                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) -a nameToSearch` to search in your all content.";
                     }
                     break;
 
