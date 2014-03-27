@@ -107,11 +107,12 @@ public class TerminalController implements Serializable{
                         User user = userService.getUser(idUser);
 
                         int requestResult = fileService.createDir(currentDir, params[0], user);
+                        /// Response analyser.
                         if(requestResult == 0)
                         {
                             response = "<span class=\"status-code\">[201]</span> Directory created.";
                         }
-                        else if(requestResult == 1)
+                        else if(requestResult == -1)
                         {
                             response = "<span class=\"status-code\">[400]</span> Directory not created, directory with this name already exist.";
                         }

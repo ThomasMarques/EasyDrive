@@ -47,19 +47,25 @@ public class FileService {
 
     public int createDir(String folder, String dirName, User user)
     {
+        for(FrontFile frontFile : getAll(folder))
+        {
+            if(frontFile.getBackFile().getName().equals(dirName))
+                return -1;
+        }
+
         BackFile backFile = new BackFile();
-        FrontFile frontFile = new FrontFile();
+        FrontFile newFrontFile = new FrontFile();
 
         backFile.setName(dirName);
         backFile.setSize(0);
 
         fileDAL.persistBackFile(backFile);
 
-        frontFile.setAbsPath(folder);
-        frontFile.setUser(user);
-        frontFile.setBackFile(backFile);
+        newFrontFile.setAbsPath(folder);
+        newFrontFile.setUser(user);
+        newFrontFile.setBackFile(backFile);
 
-        fileDAL.persistFrontFile(frontFile);
+        fileDAL.persistFrontFile(newFrontFile);
         return 0;
     }
 }
