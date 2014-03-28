@@ -111,7 +111,7 @@ public class TerminalController implements Serializable{
                     {
                         List<FrontFile> listChild = fileService.getAll(currentDir, userId);
                         response = "<span class=\"status-code\">[200]</span> "+currentDir;
-                        response += formateListFiles(listChild);
+                        response += formateListFiles(listChild, false);
                     }
                     else
                     {
@@ -128,17 +128,6 @@ public class TerminalController implements Serializable{
                     else
                     {
                         response = "<span class=\"status-code\">[400]</span> Usage : `pwd`.";
-                    }
-                    break;
-
-                case "rm" :
-                    if(params.length == 1)
-                    {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
-                    }
-                    else
-                    {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
                     }
                     break;
 
@@ -164,11 +153,24 @@ public class TerminalController implements Serializable{
                     {
                         response = "<span class=\"status-code\">[400]</span> Usage : `mkdir nameForNewDirectory`.";
                     }
-
                     break;
+
+                case "rm" :
+                    if(params.length == 1)
+                    {
+                        // TODO
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
+                    }
+                    break;
+
                 case "cp" :
                     if(params.length == 2)
                     {
+                        // TODO
                         response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
                     }
                     else
@@ -180,6 +182,7 @@ public class TerminalController implements Serializable{
                 case "mv" :
                     if(params.length == 2)
                     {
+                        // TODO
                         response = "<span class=\"status-code\">[400]</span> Not implemented => move the file (param1) in the folder (param2).";
                     }
                     else
@@ -192,6 +195,7 @@ public class TerminalController implements Serializable{
                 case "download" :
                     if(params.length == 1)
                     {
+                        // TODO
                         response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
                     }
                     else
@@ -204,12 +208,16 @@ public class TerminalController implements Serializable{
                 case "search" :
                     if(params.length == 1 || params.length == 2)
                     {
-                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"", userId);
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                        String dir = params.length == 2?params[1]:currentDir;
+                        if(dir.equals("-a"))
+                            dir = "/home";
+                        List<FrontFile> result = fileService.search(params[0], dir, userId);
+                        response = "<span class=\"status-code\">[200]</span> ";
+                        response += formateListFiles(result, true);
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) -a nameToSearch` to search in your all content.";
+                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) nameToSearch  -a` to search in your all content, `find (or search) nameToSearch  directoryToSearch` to search in a specific directory.";
                     }
                     break;
 
@@ -269,17 +277,20 @@ public class TerminalController implements Serializable{
         return response;
     }
 
-    String formateListFiles(List<FrontFile> filesList)
+    String formateListFiles(List<FrontFile> filesList, boolean showPath)
     {
         String files = "";
         String directories = "";
+        String currentPath = "";
 
         for(FrontFile frontFile : filesList)
         {
+            if(showPath)
+                currentPath = frontFile.getAbsPath();
             if(frontFile.isDirectory())
-                directories += "<br/>d-  " + frontFile.getBackFile().getName();
+                directories += "<br/>d-  " + currentPath + frontFile.getBackFile().getName();
             else
-                files += "<br/>-- " + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+                files += "<br/>-- " + currentPath + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
         }
         return directories + files;
     }

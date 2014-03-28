@@ -138,38 +138,6 @@ public class FileService {
         return path;
     }
 
-    private List<String> getRealPathAndOwner(String path)
-    {
-        List<String> pathAndOwner = new ArrayList<String>();
-        if(path.startsWith("/share/"))
-        {
-            System.out.println(path);
-            int index = nthOccurrence(path, '/', 4);
-            if(index != -1)
-            {
-                String link = path.substring(0, index);
-                System.out.println(link);
-                String additionalPath = path.substring(index);
-                System.out.println(additionalPath);
-                /// add the user
-                pathAndOwner.add(path.split("/")[1]);
-                System.out.println(path.split("/")[1]);
-
-                FrontFile linkFile = fileDAL.getFile(link, "", "symlink");
-                if(linkFile.getSharePath() == null)
-                {
-                    throw new InvalidParameterException();
-                }
-
-                path = linkFile.getSharePath() + additionalPath;
-                System.out.println(path);
-            }
-        }
-        pathAndOwner.add(0, path);
-
-        return pathAndOwner;
-    }
-
     public int createDir(String folder, String dirName, String userId)
     {
         List<String> dirAndOwner = getRealPathAndOwner(dirName);
@@ -196,15 +164,15 @@ public class FileService {
         return 0;
     }
 
-    public List<FrontFile> search(String nameToSearch, String currentDir, String userId)
+    public List<FrontFile> search(String nameToSearch, String searchDir, String userId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(currentDir);
+        List<String> dirAndOwner = getRealPathAndOwner(searchDir);
         if(dirAndOwner.size() == 2)
         {
             userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
         }
-        currentDir = dirAndOwner.get(0);
-        return fileDAL.search(nameToSearch, currentDir, userId);
+        searchDir = dirAndOwner.get(0);
+        return fileDAL.search(nameToSearch, searchDir, userId);
     }
 
     public int share(String currentDir, String name, String userLogin, String ownerId)
@@ -241,5 +209,37 @@ public class FileService {
         while (n-- > 0 && pos != -1)
             pos = str.indexOf(c, pos+1);
         return pos;
+    }
+
+    private List<String> getRealPathAndOwner(String path)
+    {
+        List<String> pathAndOwner = new ArrayList<String>();
+        if(path.startsWith("/share/"))
+        {
+            System.out.println(path);
+            int index = nthOccurrence(path, '/', 4);
+            if(index != -1)
+            {
+                String link = path.substring(0, index);
+                System.out.println(link);
+                String additionalPath = path.substring(index);
+                System.out.println(additionalPath);
+                /// add the user
+                pathAndOwner.add(path.split("/")[1]);
+                System.out.println(path.split("/")[1]);
+
+                FrontFile linkFile = fileDAL.getFile(link, "", "symlink");
+                if(linkFile.getSharePath() == null)
+                {
+                    throw new InvalidParameterException();
+                }
+
+                path = linkFile.getSharePath() + additionalPath;
+                System.out.println(path);
+            }
+        }
+        pathAndOwner.add(0, path);
+
+        return pathAndOwner;
     }
 }
