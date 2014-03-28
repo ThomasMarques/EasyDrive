@@ -182,26 +182,26 @@ public class FileService {
             return -2;
 
         List<String> dirAndOwner = getRealPathAndOwner(currentDir);
-        if(dirAndOwner.size() == 2)
+        if(dirAndOwner.size() > 1)
             return -4;
 
-        System.out.println(currentDir + name);
+        boolean success = false;
 
         if(fileExist(currentDir, name, ownerId))
         {
             /// Partage d'un fichier
-
+            success = shareFile(currentDir, name, user, userDAL.getUserById(ownerId));
         }
         else if(folderExist(currentDir + name + "/", ownerId))
         {
             /// Partage d'un dossier
-
+            success = shareFolder(currentDir, name, user, userDAL.getUserById(ownerId));
         }
         else
         {
             return -1;
         }
-        return 0;
+        return success?0:-3;
     }
 
     private static int nthOccurrence(String str, char c, int n) {
@@ -211,22 +211,62 @@ public class FileService {
         return pos;
     }
 
+    private boolean shareFile(String currentDir, String name, User userTarget, User owner)
+    {
+        String fileLocation = "/share/" + owner.getLogin() + "/files/";
+        if(fileExist(fileLocation, name, owner.getIdUser()))
+            return false;
+
+        if(!folderExist("/share/" + owner.getLogin() + "/", userTarget.getIdUser()))
+            createDir("/share/", owner.getLogin(), userTarget.getIdUser());
+
+        if(!folderExist(fileLocation, userTarget.getIdUser()))
+            createDir("/share/" + owner.getLogin() + "/", "files", userTarget.getIdUser());
+
+        /// Create link to the file
+        FrontFile fileRef = fileDAL.getFile(currentDir, name, owner.getIdUser());
+        BackFile backFileRef = fileRef.getBackFile();
+
+        FrontFile shortLink = new FrontFile();
+        shortLink.setBackFile(backFileRef);
+        shortLink.setAbsPath(fileLocation);
+        shortLink.setUser(userTarget);
+
+        fileDAL.saveFrontFile(shortLink);
+
+        return true;
+    }
+
+    private boolean shareFolder(String currentDir, String name, User userTarget, User owner)
+    {
+        String fileLocation = "/share/" + owner.getLogin() + "/" + name + "/";
+        if(folderExist(fileLocation, owner.getIdUser()))
+            return false;
+
+        if(!folderExist("/share/" + owner.getLogin() + "/", userTarget.getIdUser()))
+            createDir("/share/", owner.getLogin(), userTarget.getIdUser());
+
+        if(!folderExist(fileLocation, userTarget.getIdUser()))
+            createDir("/share/" + owner.getLogin() + "/", name, userTarget.getIdUser());
+
+        /// Create link to the external folder
+
+        return true;
+    }
+
     private List<String> getRealPathAndOwner(String path)
     {
         List<String> pathAndOwner = new ArrayList<String>();
-        if(path.startsWith("/share/"))
+        if(path.startsWith("/share/") && !path.split("/")[2].equals("files"))
         {
-            System.out.println(path);
+            System.out.println("getRealPathAndOwner " + path);
             int index = nthOccurrence(path, '/', 4);
             if(index != -1)
             {
                 String link = path.substring(0, index);
-                System.out.println(link);
                 String additionalPath = path.substring(index);
-                System.out.println(additionalPath);
                 /// add the user
                 pathAndOwner.add(path.split("/")[1]);
-                System.out.println(path.split("/")[1]);
 
                 FrontFile linkFile = fileDAL.getFile(link, "", "symlink");
                 if(linkFile.getSharePath() == null)

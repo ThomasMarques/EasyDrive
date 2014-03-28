@@ -15,7 +15,7 @@ public class FileAccessLayer {
     {
         Session session = HibernateSession.getSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(frontFile);
+        session.saveOrUpdate(frontFile);
         transaction.commit();
         session.close();
     }
@@ -24,7 +24,25 @@ public class FileAccessLayer {
     {
         Session session = HibernateSession.getSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(backFile);
+        session.saveOrUpdate(backFile);
+        transaction.commit();
+        session.close();
+    }
+
+    public void saveFrontFile(FrontFile frontFile)
+    {
+        Session session = HibernateSession.getSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(frontFile);
+        transaction.commit();
+        session.close();
+    }
+
+    public void saveBackFile(BackFile backFile)
+    {
+        Session session = HibernateSession.getSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(backFile);
         transaction.commit();
         session.close();
     }
