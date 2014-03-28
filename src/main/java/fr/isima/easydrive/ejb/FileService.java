@@ -140,6 +140,9 @@ public class FileService {
 
     public int createDir(String folder, String dirName, String userId)
     {
+        if(isReadOnlyFolder(folder))
+            return -2;
+
         List<String> dirAndOwner = getRealPathAndOwner(dirName, userId);
         if(dirAndOwner.size() == 2)
         {
@@ -204,6 +207,27 @@ public class FileService {
         return success?0:-3;
     }
 
+    public int move(String currentDir, String name, String newLocation, String ownerId)
+    {
+        if(isReadOnlyFolder(newLocation) || isReadOnlyFolder(currentDir))
+            return -3;
+
+        if(folderExist(newLocation, ownerId))
+            return -1;
+
+        if(!folderExist(currentDir + name + "/", ownerId) && !fileExist(currentDir, name, ownerId))
+            return -2;
+
+        FrontFile frontFile = fileDAL.getFile(currentDir, name, ownerId);
+
+        if(frontFile == null)
+            return -3;
+
+        frontFile.setAbsPath(newLocation);
+
+        return 0;
+    }
+
     private static int nthOccurrence(String str, char c, int n) {
         int pos = str.indexOf(c, 0);
         while (--n > 0 && pos != -1)
@@ -258,6 +282,17 @@ public class FileService {
         fileDAL.saveFrontFile(shortLink);
 
         return true;
+    }
+
+    private boolean isReadOnlyFolder(String path)
+    {
+        if(path.equals("/"))
+            return true;
+        if(path.startsWith("/share/"))
+        {
+            return path.split("/").length < 4;
+        }
+        return false;
     }
 
     private List<String> getRealPathAndOwner(String path, String idCurrentUser)
