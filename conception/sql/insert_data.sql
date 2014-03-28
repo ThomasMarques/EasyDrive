@@ -20,13 +20,13 @@ INSERT INTO `back_file` VALUES
 
 -- Front file data
 INSERT INTO `front_file` VALUES
-(1, 1, 1, 0, '', NULL),
-(2, 2, 1, 0, '/', NULL),
-(3, 3, 1, 0, '/', NULL),
-(4, 4, 2, 0, '', NULL),
-(5, 5, 2, 0, '/', NULL),
-(6, 6, 2, 0, '/', NULL),
-(7, 7, 3, 0, '', NULL),
-(8, 8, 3, 0, '/', NULL),
-(9, 9, 3, 0, '/', NULL);
+(1, 1, 1, '', NULL),
+(2, 2, 1, '/', NULL),
+(3, 3, 1, '/', NULL),
+(4, 4, 2, '', NULL),
+(5, 5, 2, '/', NULL),
+(6, 6, 2, '/', NULL),
+(7, 7, 3, '', NULL),
+(8, 8, 3, '/', NULL),
+(9, 9, 3, '/', NULL);
 -- End Front file data

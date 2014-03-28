@@ -32,8 +32,6 @@ public class FrontFile implements Serializable {
     @Column(name="share_path")
     private String sharePath;
 
-	private byte share;
-
 	//bi-directional many-to-one association to BackFile
 	@ManyToOne
 	@JoinColumn(name="id_back_file")
@@ -70,14 +68,6 @@ public class FrontFile implements Serializable {
     public void setSharePath(String absPath) {
         this.sharePath = sharePath;
     }
-
-	public byte getShare() {
-		return this.share;
-	}
-
-	public void setShare(byte share) {
-		this.share = share;
-	}
 
 	public BackFile getBackFile() {
 		return this.backFile;

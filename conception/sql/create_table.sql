@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS `front_file` (
   `id_front_file` bigint(20) NOT NULL AUTO_INCREMENT,
   `id_back_file` bigint(20) NOT NULL,
   `id_owner` bigint(20) NOT NULL,
-  `share` tinyint(1) NOT NULL DEFAULT '0',
   `abs_path` varchar(512) NOT NULL,
   `share_path` varchar(512) NULL DEFAULT NULL,
   PRIMARY KEY (`id_front_file`),
