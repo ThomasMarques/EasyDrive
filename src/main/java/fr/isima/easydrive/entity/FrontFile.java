@@ -15,6 +15,7 @@ import javax.persistence.*;
     @NamedQuery(name="FrontFile.findFileByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
     @NamedQuery(name="FrontFile.findAllByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
     @NamedQuery(name="FrontFile.findFileByName", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :path AND id_owner = :owner_id AND f.backFile.name LIKE :name"),
+    @NamedQuery(name="FrontFile.findFileSymlink", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :path AND id_owner = :owner_id"),
     @NamedQuery(name="FrontFile.Search", query="SELECT f FROM FrontFile f WHERE f.backFile.name LIKE :nameToSearch AND abs_path LIKE :path AND id_owner = :userId")
 })
 public class FrontFile implements Serializable {
@@ -63,11 +64,11 @@ public class FrontFile implements Serializable {
 	}
 
     public String getSharePath() {
-        return this.absPath;
+        return this.sharePath;
     }
 
     public void setSharePath(String absPath) {
-        this.absPath = absPath;
+        this.sharePath = sharePath;
     }
 
 	public byte getShare() {
@@ -95,6 +96,6 @@ public class FrontFile implements Serializable {
 	}
 
     public boolean isDirectory() {
-        return getBackFile().getData() == null;
+        return getBackFile() != null && getBackFile().getData() == null;
     }
 }

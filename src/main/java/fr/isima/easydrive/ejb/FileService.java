@@ -37,7 +37,7 @@ public class FileService {
 
     public List<FrontFile> getFiles(String parentPath, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(parentPath);
+        List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
         if(dirAndOwner.size() == 2)
         {
             ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -48,7 +48,7 @@ public class FileService {
 
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(parentPath);
+        List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
         if(dirAndOwner.size() == 2)
         {
             ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -59,7 +59,7 @@ public class FileService {
 
     public boolean folderExist(String path, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(path);
+        List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
         if(dirAndOwner.size() == 2)
         {
             ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -70,7 +70,7 @@ public class FileService {
 
     public boolean fileExist(String path, String name, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(path);
+        List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
         if(dirAndOwner.size() == 2)
         {
             ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -140,7 +140,7 @@ public class FileService {
 
     public int createDir(String folder, String dirName, String userId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(dirName);
+        List<String> dirAndOwner = getRealPathAndOwner(dirName, userId);
         if(dirAndOwner.size() == 2)
         {
             userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -166,7 +166,7 @@ public class FileService {
 
     public List<FrontFile> search(String nameToSearch, String searchDir, String userId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(searchDir);
+        List<String> dirAndOwner = getRealPathAndOwner(searchDir, userId);
         if(dirAndOwner.size() == 2)
         {
             userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -181,7 +181,7 @@ public class FileService {
         if(user == null)
             return -2;
 
-        List<String> dirAndOwner = getRealPathAndOwner(currentDir);
+        List<String> dirAndOwner = getRealPathAndOwner(currentDir, ownerId);
         if(dirAndOwner.size() > 1)
             return -4;
 
@@ -206,7 +206,7 @@ public class FileService {
 
     private static int nthOccurrence(String str, char c, int n) {
         int pos = str.indexOf(c, 0);
-        while (n-- > 0 && pos != -1)
+        while (--n > 0 && pos != -1)
             pos = str.indexOf(c, pos+1);
         return pos;
     }
@@ -250,25 +250,35 @@ public class FileService {
             createDir("/share/" + owner.getLogin() + "/", name, userTarget.getIdUser());
 
         /// Create link to the external folder
+        FrontFile shortLink = new FrontFile();
+        shortLink.setAbsPath(fileLocation);
+        shortLink.setUser(userTarget);
+        shortLink.setSharePath(currentDir + name + "/");
+
+        fileDAL.saveFrontFile(shortLink);
 
         return true;
     }
 
-    private List<String> getRealPathAndOwner(String path)
+    private List<String> getRealPathAndOwner(String path, String idCurrentUser)
     {
         List<String> pathAndOwner = new ArrayList<String>();
-        if(path.startsWith("/share/") && !path.split("/")[2].equals("files"))
+        String[] splittedPath = path.split("/");
+        if(path.startsWith("/share/") && splittedPath.length > 3 && !splittedPath[3].equals("files"))
         {
-            System.out.println("getRealPathAndOwner " + path);
+            System.out.println(path);
             int index = nthOccurrence(path, '/', 4);
             if(index != -1)
             {
-                String link = path.substring(0, index);
-                String additionalPath = path.substring(index);
+                String link = path.substring(0, index + 1);
+                String additionalPath = path.substring(index + 1);
                 /// add the user
-                pathAndOwner.add(path.split("/")[1]);
+                String login = path.split("/")[2];
+                pathAndOwner.add(login);
 
-                FrontFile linkFile = fileDAL.getFile(link, "", "symlink");
+                System.out.println(link);
+                System.out.println(login);
+                FrontFile linkFile = fileDAL.getFileSymlink(link, idCurrentUser);
                 if(linkFile.getSharePath() == null)
                 {
                     throw new InvalidParameterException();

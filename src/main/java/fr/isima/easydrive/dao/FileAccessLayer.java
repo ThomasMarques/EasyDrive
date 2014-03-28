@@ -74,6 +74,19 @@ public class FileAccessLayer {
         return file;
     }
 
+    public FrontFile getFileSymlink(String path, String ownerId)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFileSymlink");
+        query.setString("path", path);
+        query.setString("owner_id", ownerId);
+        FrontFile file = (FrontFile)query.uniqueResult();
+
+        session.close();
+
+        return file;
+    }
+
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
         Session session = HibernateSession.getSession();

@@ -287,10 +287,11 @@ public class TerminalController implements Serializable{
         {
             if(showPath)
                 currentPath = frontFile.getAbsPath();
-            if(frontFile.isDirectory())
-                directories += "<br/>d-  " + currentPath + frontFile.getBackFile().getName();
-            else
-                files += "<br/>-- " + currentPath + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+            //if(frontFile.getBackFile() != null)
+                if(frontFile.isDirectory())
+                    directories += "<br/>d-  " + currentPath + frontFile.getBackFile().getName();
+                else
+                    files += "<br/>-- " + currentPath + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
         }
         return directories + files;
     }
