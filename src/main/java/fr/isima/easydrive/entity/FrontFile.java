@@ -13,8 +13,10 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name="FrontFile.findAll", query="SELECT f FROM FrontFile f "),
     @NamedQuery(name="FrontFile.findFileByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
-    @NamedQuery(name="FrontFile.findAllByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id")
-    //@NamedQuery(name="FrontFile.Search", query="SELECT f FROM FrontFile f, BackFile b WHERE b.name LIKE :nameToSearch AND b.id_back_file = f.id_back_file AND f.abs_path LIKE :path")
+    @NamedQuery(name="FrontFile.findAllByParent", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :parent AND id_owner = :owner_id"),
+    @NamedQuery(name="FrontFile.findFileByName", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :path AND id_owner = :owner_id AND f.backFile.name LIKE :name"),
+    @NamedQuery(name="FrontFile.findFileSymlink", query="SELECT f FROM FrontFile f WHERE abs_path LIKE :path AND id_owner = :owner_id"),
+    @NamedQuery(name="FrontFile.Search", query="SELECT f FROM FrontFile f WHERE f.backFile.name LIKE :nameToSearch AND abs_path LIKE :path AND id_owner = :userId")
 })
 public class FrontFile implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -29,8 +31,6 @@ public class FrontFile implements Serializable {
 
     @Column(name="share_path")
     private String sharePath;
-
-	private byte share;
 
 	//bi-directional many-to-one association to BackFile
 	@ManyToOne
@@ -62,20 +62,12 @@ public class FrontFile implements Serializable {
 	}
 
     public String getSharePath() {
-        return this.absPath;
+        return this.sharePath;
     }
 
     public void setSharePath(String absPath) {
-        this.absPath = absPath;
+        this.sharePath = sharePath;
     }
-
-	public byte getShare() {
-		return this.share;
-	}
-
-	public void setShare(byte share) {
-		this.share = share;
-	}
 
 	public BackFile getBackFile() {
 		return this.backFile;
@@ -93,4 +85,7 @@ public class FrontFile implements Serializable {
 		this.user = user;
 	}
 
+    public boolean isDirectory() {
+        return getBackFile() != null && getBackFile().getData() == null;
+    }
 }

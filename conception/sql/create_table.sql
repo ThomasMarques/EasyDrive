@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS `front_file` (
   `id_front_file` bigint(20) NOT NULL AUTO_INCREMENT,
   `id_back_file` bigint(20) NOT NULL,
   `id_owner` bigint(20) NOT NULL,
-  `share` tinyint(1) NOT NULL DEFAULT '0',
   `abs_path` varchar(512) NOT NULL,
   `share_path` varchar(512) NULL DEFAULT NULL,
   PRIMARY KEY (`id_front_file`),
@@ -33,3 +32,5 @@ CREATE TABLE IF NOT EXISTS `user` (
 ALTER TABLE `front_file`
   ADD CONSTRAINT `front_file_ibfk_2` FOREIGN KEY (`id_owner`) REFERENCES `user` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `front_file_ibfk_1` FOREIGN KEY (`id_back_file`) REFERENCES `back_file` (`id_back_file`) ON DELETE CASCADE ON UPDATE CASCADE;
+  
+ALTER TABLE  `front_file` CHANGE  `id_back_file`  `id_back_file` BIGINT( 20 ) NULL ;

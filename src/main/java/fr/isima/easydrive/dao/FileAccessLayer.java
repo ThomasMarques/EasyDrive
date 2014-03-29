@@ -15,7 +15,7 @@ public class FileAccessLayer {
     {
         Session session = HibernateSession.getSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(frontFile);
+        session.saveOrUpdate(frontFile);
         transaction.commit();
         session.close();
     }
@@ -24,7 +24,25 @@ public class FileAccessLayer {
     {
         Session session = HibernateSession.getSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(backFile);
+        session.saveOrUpdate(backFile);
+        transaction.commit();
+        session.close();
+    }
+
+    public void saveFrontFile(FrontFile frontFile)
+    {
+        Session session = HibernateSession.getSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(frontFile);
+        transaction.commit();
+        session.close();
+    }
+
+    public void saveBackFile(BackFile backFile)
+    {
+        Session session = HibernateSession.getSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(backFile);
         transaction.commit();
         session.close();
     }
@@ -42,18 +60,31 @@ public class FileAccessLayer {
         return files;
     }
 
-    public FrontFile getFile(String parentPath, String name, String ownerId)
+   public FrontFile getFile(String path, String name, String ownerId)
     {
-        List<FrontFile> files =  getFiles(parentPath, ownerId);
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFileByName");
+        query.setString("path", path);
+        query.setString("name", name);
+        query.setString("owner_id", ownerId);
+        FrontFile file = (FrontFile)query.uniqueResult();
 
-        for(FrontFile file : files)
-        {
-            System.out.print(file.getBackFile().getName());
-            if(file.getBackFile().getName().equals(name))
-                return file;
-        }
+        session.close();
 
-        return null;
+        return file;
+    }
+
+    public FrontFile getFileSymlink(String path, String ownerId)
+    {
+        Session session = HibernateSession.getSession();
+        Query query = session.getNamedQuery("FrontFile.findFileSymlink");
+        query.setString("path", path);
+        query.setString("owner_id", ownerId);
+        FrontFile file = (FrontFile)query.uniqueResult();
+
+        session.close();
+
+        return file;
     }
 
     public List<FrontFile> getAll(String parentPath, String ownerId)
@@ -74,7 +105,7 @@ public class FileAccessLayer {
         int length = path.length();
         int index = path.substring(0, length-1).lastIndexOf('/');
         String absolutePath = path.substring( 0, index+1 );
-        String name = path.substring( index+1, length-1 );
+        String name = path.substring(index + 1, length - 1);
 
         return fileExist(absolutePath, name, ownerId, true);
     }
@@ -86,36 +117,20 @@ public class FileAccessLayer {
         {
             if(file.getBackFile().getName().equals(name))
             {
-                if( isFolder )
-                {
-                    if(file.getBackFile().getData() == null)
-                    {
-                        return true;
-                    }
-                    else
-                        return false;
-                }
-                else
-                {
-                    if(file.getBackFile().getData() != null)
-                    {
-                        return true;
-                    }
-                    else
-                        return false;
-                }
+                return file.isDirectory() == isFolder;
             }
         }
 
         return false;
     }
 
-    public List<FrontFile> search(String nameToSearch, String currentDir)
+    public List<FrontFile> search(String nameToSearch, String currentDir, String userId)
     {
         Session session = HibernateSession.getSession();
         Query query = session.getNamedQuery("FrontFile.Search");
         query.setString("nameToSearch", "%"+nameToSearch+"%");
         query.setString("path", currentDir+"%");
+        query.setString("userId", userId);
         List<FrontFile> files =  query.list();
 
         session.close();

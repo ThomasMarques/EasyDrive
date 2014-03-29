@@ -52,10 +52,14 @@ public class TerminalController implements Serializable{
         {
             String currentDir = (String)session.getAttribute("current_path");
             User user;
+            String userId = null;
+
+            if(!command.equals("login"))
+                userId = (String)session.getAttribute("user_id");
+
             switch(command)
             {
                 case "login":
-
                     //clear session
                     if(session != null)
                     {
@@ -93,39 +97,39 @@ public class TerminalController implements Serializable{
                             }
                         }
                     }
-                break;
+                    break;
                 case "cd" :
-                    if(params.length == 0)
-                    {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `cd path`.";
-                    }
-                    else
+                    if(params.length == 1)
                     {
                         String path = params[0];
-
-                        //absolute path
+                        //get absolute path
                         path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
 
-                        if(path != null && fileService.folderExist(path, (String)session.getAttribute("user_id")))
+                        if(path != null && fileService.folderExist(path, userId))
                         {
-
                             session.setAttribute("current_path", path);
                             response = "<span class=\"status-code\">[200]</span> " + path ;
                         }
                         else
                         {
-                            response = "<span class=\"status-code\">[400]</span> given path doesn't exist : " + params[0] ;
+                            response = "<span class=\"status-code\">[400]</span> The given path `" + params[0] + "` is not a directory or doesn't exist.";
                         }
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cd directoryPath`, the path may be relative or absolute.";
                     }
                     break;
                 case "ls" :
-                    List<FrontFile> listChild = fileService.getAll(currentDir, (String)session.getAttribute("user_id"));
-
-                    response = "<span class=\"status-code\">[200]</span> "+currentDir;
-
-                    for(FrontFile frontFile : listChild)
+                    if(params.length == 0)
                     {
-                        response+= "<br/>" + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+                        List<FrontFile> listChild = fileService.getAll(currentDir, userId);
+                        response = "<span class=\"status-code\">[200]</span> "+currentDir;
+                        response += formateListFiles(listChild, false);
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `ls`.";
                     }
 
                     break;
@@ -141,24 +145,11 @@ public class TerminalController implements Serializable{
                     }
                     break;
 
-                case "rm" :
-                    if(params.length == 1)
-                    {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
-                    }
-                    else
-                    {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
-                    }
-                    break;
-
                 case "mkdir" :
                     if(params.length == 1)
                     {
-                        String idUser = (String) session.getAttribute("user_id");
-                        user = userService.getUserById(idUser);
+                        int requestResult = fileService.createDir(currentDir, params[0], userId);
 
-                        int requestResult = fileService.createDir(currentDir, params[0], user);
                         /// Response analyser.
                         if(requestResult == 0)
                         {
@@ -177,11 +168,24 @@ public class TerminalController implements Serializable{
                     {
                         response = "<span class=\"status-code\">[400]</span> Usage : `mkdir nameForNewDirectory`.";
                     }
-
                     break;
+
+                case "rm" :
+                    if(params.length == 1)
+                    {
+                        // TODO
+                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                    }
+                    else
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `rm nameOfFileOrDirectoryToRemove`.";
+                    }
+                    break;
+
                 case "cp" :
                     if(params.length == 2)
                     {
+                        // TODO
                         response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
                     }
                     else
@@ -193,7 +197,23 @@ public class TerminalController implements Serializable{
                 case "mv" :
                     if(params.length == 2)
                     {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => move the file (param1) in the folder (param2).";
+                        int res = fileService.move(currentDir, params[0], params[1], userId);
+                        if(res == 0)
+                        {
+                            response = "<span class=\"status-code\">[200]</span> Moved.";
+                        }
+                        else if(res == -1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The destination folder doesn't exist.";
+                        }
+                        else if(res == -2)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The folder or the file to be copied doesn't exist.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Move impossible.";
+                        }
                     }
                     else
                     {
@@ -203,10 +223,9 @@ public class TerminalController implements Serializable{
 
                 case "get" :
                 case "download" :
-                    String idUser = (String) session.getAttribute("user_id");
                     if(params.length == 1)
                     {
-                        if(fileService.fileExist(currentDir, params[0], idUser))
+                        if(fileService.fileExist(currentDir, params[0], userId))
                         {
                             session.setAttribute("download_file", params[0]);
                             response = "<span class=\"status-code\">[200]</span> Downloading file " + params[0] + ".";
@@ -224,20 +243,48 @@ public class TerminalController implements Serializable{
                 case "search" :
                     if(params.length == 1 || params.length == 2)
                     {
-                        List<FrontFile> result = fileService.search(params[0], params.length == 2?params[1]:"");
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => search a file containing (param1) from the current folder.";
+                        String dir = params.length == 2?params[1]:currentDir;
+                        if(dir.equals("-a"))
+                            dir = "/home";
+                        List<FrontFile> result = fileService.search(params[0], dir, userId);
+                        response = "<span class=\"status-code\">[200]</span> ";
+                        response += formateListFiles(result, true);
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) -a nameToSearch` to search in your all content.";
+                        response = "<span class=\"status-code\">[400]</span> Usage : `find (or search) nameToSearch` to search in the current directory,  `find (or search) nameToSearch  -a` to search in your all content, `find (or search) nameToSearch  directoryToSearch` to search in a specific directory.";
                     }
                     break;
 
-                case "chmod" :
                 case "share" :
+                case "chmod" :
                     if(params.length == 2)
                     {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => share the file or folder (param1) with the user having to login (param2).";
+                        int serviceResponse = fileService.share(currentDir, params[0], params[1], userId);
+                        if(serviceResponse == 0)
+                        {
+                            response = "<span class=\"status-code\">[201]</span> Shared.";
+                        }
+                        else if(serviceResponse == -1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> File or directory `" + params[0] + "` doesn't exist.";
+                        }
+                        else if(serviceResponse == -2)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> User `" + params[0] + "` doesn't exist.";
+                        }
+                        else if(serviceResponse == -3)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> File or directory `" + params[0] + "` already shared with this user.";
+                        }
+                        else if(serviceResponse == -4)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The file or folder does not belong to you, only the owner can share it.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Unable to share the file or folder `" + params[0] + "` with the user `" + params[1] + "`.";
+                        }
                     }
                     else
                     {
@@ -263,5 +310,24 @@ public class TerminalController implements Serializable{
         }
 
         return response;
+    }
+
+    String formateListFiles(List<FrontFile> filesList, boolean showPath)
+    {
+        String files = "";
+        String directories = "";
+        String currentPath = "";
+
+        for(FrontFile frontFile : filesList)
+        {
+            if(showPath)
+                currentPath = frontFile.getAbsPath();
+            //if(frontFile.getBackFile() != null)
+                if(frontFile.isDirectory())
+                    directories += "<br/>d-  " + currentPath + frontFile.getBackFile().getName();
+                else
+                    files += "<br/>-- " + currentPath + frontFile.getBackFile().getName() + " <" + frontFile.getBackFile().getSize() + "B>";
+        }
+        return directories + files;
     }
 }   
