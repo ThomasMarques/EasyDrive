@@ -28,11 +28,20 @@
    		</div>
 		<div id="content">
 			<h:form id="form-file" style="display: none;">
-			    <p:fileUpload id="add-file" fileUploadListener="#{fileUploadController.handleFileUpload}" mode="advanced" dragDropSupport="false"
+			    <p:fileUpload id="add-file" fileUploadListener="#{fileController.handleFileUpload}" mode="advanced" dragDropSupport="false"
 			                  multiple="true" update="messages" sizeLimit="100000000" fileLimit="15" />
 			    <p:growl id="messages" showDetail="true"/>
 			</h:form>
-                    
+
+            <h:form id="form-file-download" style="display: none;">
+
+                <p:commandButton id="downloadLink" value="Download" ajax="false"
+                                 icon="ui-icon-arrowthichk-s">
+                    <p:fileDownload id="download" value="#{fileController.file}" />
+                </p:commandButton>
+
+            </h:form>
+
 			<div id="center">
 				<div id="term-title"><span id="text-term-title">easydrive - term</span></div>
 				<div id="text-term-subtitle"><span>Welcome to EasyDrive Terminal, type help to see command.</span></div>

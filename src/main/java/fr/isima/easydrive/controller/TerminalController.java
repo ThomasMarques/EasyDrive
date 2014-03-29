@@ -12,6 +12,8 @@ import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.User;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 @ManagedBean(name="terminalController")
@@ -40,64 +42,80 @@ public class TerminalController implements Serializable{
             connected = false;
         }
 
-        if(!connected)
+
+        /// Client not connected.
+        if(connected == false && !command.equals("login"))
         {
-            /// Client not connected.
-            if(command.equals("login"))
-            {
-                String login = params[0];
-
-                if(session != null)
-                    session.invalidate();
-
-                User user = userService.getUserByLogin(login);
-
-                if(user == null)
-                {
-                    response = "<span class=\"status-code\">[401]</span> Login `" + login + "` does not exist.";
-                }
-                else
-                {
-                    if(user.checkPassword(params[1]))
-                    {
-                        session = (HttpSession) context.getExternalContext().getSession(true);
-                        session.setAttribute("connected", true);
-                        session.setAttribute("user_id", user.getIdUser());
-                        session.setAttribute("current_path", "/");
-                        response = "<span class=\"status-code\">[200]</span> Welcome " + login + ".";
-                    }
-                    else
-                    {
-                        response = "<span class=\"status-code\">[401]</span> The password does not match.";
-                    }
-                }
-            }
-            else
-            {
-                response = "<span class=\"status-code\">[401]</span> Unauthorized : Client not connected.";
-            }
+            response = "<span class=\"status-code\">[401]</span> Unauthorized : Client not connected.";
         }
         else
         {
-            /// Client connected.
             String currentDir = (String)session.getAttribute("current_path");
+            User user;
             switch(command)
             {
-                case "cd" :
-                    String path = params[0];
+                case "login":
 
-                    //absolute path
-                    path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
-
-                    if(path != null && fileService.folderExist(path, (String)session.getAttribute("user_id")))
+                    //clear session
+                    if(session != null)
                     {
+                        Enumeration<String> attrs = session.getAttributeNames();
+                        for(; attrs.hasMoreElements() ;)
+                        {
+                            session.removeAttribute(attrs.nextElement());
+                        }
+                    }
 
-                        session.setAttribute("current_path", path);
-                        response = "<span class=\"status-code\">[200]</span> " + path ;
+                    if(params.length != 2)
+                        response = "<span class=\"status-code\">[401]</span> Login and password cannot be empty.";
+                    else{
+                        System.out.println("login " + params[0] + " " + params[1]);
+                        String login = params[0];
+                        user = userService.getUserByLogin(login);
+
+                        if(user == null)
+                        {
+                            response = "<span class=\"status-code\">[401]</span> Login `" + login + "` does not exist.";
+                        }
+                        else
+                        {
+                            if(user.checkPassword(params[1]))
+                            {
+                                session = (HttpSession) context.getExternalContext().getSession(true);
+                                session.setAttribute("connected", true);
+                                session.setAttribute("user_id", user.getIdUser());
+                                session.setAttribute("current_path", "/");
+                                response = "<span class=\"status-code\">[200]</span> Welcome " + login + ".";
+                            }
+                            else
+                            {
+                                response = "<span class=\"status-code\">[401]</span> The password does not match.";
+                            }
+                        }
+                    }
+                break;
+                case "cd" :
+                    if(params.length == 0)
+                    {
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cd path`.";
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> given path doesn't exist : " + params[0] ;
+                        String path = params[0];
+
+                        //absolute path
+                        path = fileService.getAbsolutePath(path, (String)session.getAttribute("current_path"));
+
+                        if(path != null && fileService.folderExist(path, (String)session.getAttribute("user_id")))
+                        {
+
+                            session.setAttribute("current_path", path);
+                            response = "<span class=\"status-code\">[200]</span> " + path ;
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> given path doesn't exist : " + params[0] ;
+                        }
                     }
                     break;
                 case "ls" :
@@ -138,7 +156,7 @@ public class TerminalController implements Serializable{
                     if(params.length == 1)
                     {
                         String idUser = (String) session.getAttribute("user_id");
-                        User user = userService.getUserById(idUser);
+                        user = userService.getUserById(idUser);
 
                         int requestResult = fileService.createDir(currentDir, params[0], user);
                         /// Response analyser.
@@ -185,9 +203,16 @@ public class TerminalController implements Serializable{
 
                 case "get" :
                 case "download" :
+                    String idUser = (String) session.getAttribute("user_id");
                     if(params.length == 1)
                     {
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => download the file specified in param.";
+                        if(fileService.fileExist(currentDir, params[0], idUser))
+                        {
+                            session.setAttribute("download_file", params[0]);
+                            response = "<span class=\"status-code\">[200]</span> Downloading file " + params[0] + ".";
+                        }
+                        else
+                            response = "<span class=\"status-code\">[400]</span> File not found.";
                     }
                     else
                     {

@@ -2,12 +2,18 @@ package fr.isima.easydrive.ejb;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 import fr.isima.easydrive.dao.FileAccessLayer;
 import fr.isima.easydrive.entity.FrontFile;
 import fr.isima.easydrive.entity.BackFile;
 import fr.isima.easydrive.entity.User;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +67,6 @@ public class FileService {
         if(!path.substring(0,1).equals("/"))
         {
             path = currentPath + path;
-            System.out.println("relative : " + path);
         }
 
         //delete / at the end
@@ -70,7 +75,6 @@ public class FileService {
         {
             path = path.substring(0, length-1);
             length--;
-            System.out.println("delete end / : " + path);
         }
 
         //path without first /
@@ -146,5 +150,18 @@ public class FileService {
     {
         currentDir = getRealPath(currentDir);
         return fileDAL.search(nameToSearch, currentDir);
+    }
+
+    public FrontFile getFile(String path, String name, String ownerId)
+    {
+        System.out.println("recv");
+        if(fileDAL.fileExist(path, name, ownerId, false))
+        {
+            System.out.println("FrontFile found");
+            return fileDAL.getFile(path, name, ownerId);
+        }
+        System.out.println("FrontFile not found");
+
+        return null;
     }
 }

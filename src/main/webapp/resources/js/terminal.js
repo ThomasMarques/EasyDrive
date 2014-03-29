@@ -1,14 +1,30 @@
 $(document).ready(function() {
 	///global variables
 	context="login";
-	name_bakup="";
+	name_bakup_terminal="";
 	user="";
 	password="";
 	command_save="";
+    loop=false;
+    rebond=false;
+    last_command="";
 
 	//TODO : TO DELETE WHEN THE CSS IS DONE
 	$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
-	desactivate_form();
+	desactivate_form_terminal();
+    desactivate_form_download();
+
+    //*****************GRAPHICAL FUNCTION***********************
+    //
+    //******************************************************
+
+    function start() {
+
+    }
+
+    function stop() {
+
+    }
 
 	//*****************TOOLS FUNCTION***********************
 	// 
@@ -23,7 +39,8 @@ $(document).ready(function() {
 					$(this).addClass("error");
 			});
 		});
-		
+		$('.ui-terminal-command').last.val(last_command);
+        last_command="";
 		$('.ui-terminal-input', form).val("");
 	}
 	
@@ -67,14 +84,22 @@ $(document).ready(function() {
 		return i;
 	}
 
-	function activate_form(){
-		$("#form\\:terminal_input").attr("name", name_bakup);
+	function activate_form_terminal(){
+		$("#form\\:terminal_input").attr("name", name_bakup_terminal);
 	}
 
-	function desactivate_form(){
-		name_bakup = $("#form\\:terminal_input").attr("name");
+	function desactivate_form_terminal(){
+		name_bakup_terminal = $("#form\\:terminal_input").attr("name");
 		$("#form\\:terminal_input").attr("name", "");
 	}
+
+    function activate_form_download(){
+        $("#form-file-download\\:downloadLink").removeAttr("disabled");
+    }
+
+    function desactivate_form_download(){
+        $("#form-file-download\\:downloadLink").attr("disabled", "disabled");
+    }
 
 	//*****************COMMAND FUNCTION***********************
 	// 
@@ -89,8 +114,8 @@ $(document).ready(function() {
 	function add(){
 		//simulate click on primefaces file uploader
 		$("#form-file\\:add-file_input").trigger("click");
-		setTimeout(function() {
-		}, 20);
+		//setTimeout(function() {
+		//}, 20);
 	}
 
 	function push(){
@@ -136,8 +161,8 @@ $(document).ready(function() {
 				context="local";
 				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
 				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-local");
-				$(".ui-button").trigger("click");
-				desactivate_form();
+				$("#form\\:button_clear").trigger("click");
+				desactivate_form_terminal();
 			}, 30);	
 		}
 		else {
@@ -153,8 +178,8 @@ $(document).ready(function() {
 				context="server";
 				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-local");
 				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-server");
-				$(".ui-button").trigger("click");
-				activate_form();
+				$("#form\\:button_clear").trigger("click");
+				activate_form_terminal();
 			}, 20);
 		}
 		else {
@@ -188,6 +213,12 @@ $(document).ready(function() {
 		}, 20);	   	 		
 	}
 
+    function download(){
+        activate_form_download();
+        $("#form-file-download\\:downloadLink").trigger("click");
+        desactivate_form_download();
+    }
+
 	//**********************EVENT***************************
 	// 
 	//******************************************************
@@ -203,13 +234,10 @@ $(document).ready(function() {
 
 	base_cpt = 0;
 	$(document).bind("DOMSubtreeModified", function(evt) {
-		if(context == "server"){
-			var respond = $(".ui-terminal-content").children(':last').children(':last').html();
-			var new_cpt = $(".ui-terminal-content").children().size();
-            var code = respond.substring(27, 30);
+		if(context == "server" && !rebond){
 
-            if(respond == "")
-                return;
+            var respond = $(".ui-terminal-content").children(':last').children(':last').html();
+			var new_cpt = $(".ui-terminal-content").children().size();
 
 			if( respond != null && new_cpt != base_cpt )
 			{
@@ -218,7 +246,12 @@ $(document).ready(function() {
 		    	$("#form\\:terminal").trigger("click");
 			}
 
-			if(code == "200" && respond.substring(37, 44) == "Welcome")
+            if(respond == "")
+                return;
+
+            var code = respond.substring(27, 30);
+
+            if(code == "200" && respond.substring(37, 44) == "Welcome")
 	    	{
 				base_cpt = 0;
 				context="server";
@@ -228,34 +261,53 @@ $(document).ready(function() {
 		    else if( code == "401")
 	    	{
 		    	base_cpt = 0;
-		    	desactivate_form();
+
+		    	desactivate_form_terminal();
+                $("#form\\:terminal_input").attr('disabled', 'disabled');
 		    	context="login";
 		    	clear();
 				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-server");
 				$(".ui-terminal-prompt").addClass("ui-terminal-prompt-login");
-				$(".ui-button").trigger("click");
+				$("#form\\:button_clear").trigger("click");
 				add_elem("connection", respond, false);
+
+                //TODO : change this fix
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
 	    	}
-			
+            else if(code == "200" && respond.substring(39, 50) == "Downloading")
+            {
+                //TODO : remove this fix
+                //problem probably with the cpt
+                base_cpt = 0;
+                clear();
+
+                rebond = true;
+                download();
+            }
+
 			if( respond != null && new_cpt == base_cpt)
 				setTimeout(function() {
 					end_command();
 				}, 30);
-		}
+        }
 	});
 	
-	//event controller on keydow to create proxy before primefaces terminal
+	//event controller on keydown to create proxy before primefaces terminal
 	$("#form").keydown(function(e) {
 		//on enter key
-		if( e.keyCode == 13 || e.which == 13) {
+        rebond = false;
+        if( e.keyCode == 13 || e.which == 13) {
 			var form = $(this);
 			var formUrl=form.attr('action');
 			var full_command = $('.ui-terminal-input', form).val();
 			var command_id = full_command.split(" ")[0];
 			command_save = command_id;
 			e.preventDefault();
-			
-			// list of prioritar commands
+            command_save = full_command;
+
+            // list of prioritar commands
 			// local AND server side
 			switch(command_id) {
 			case "server": //change context to server
@@ -265,8 +317,8 @@ $(document).ready(function() {
 				local();
 				return;
 			case "clear": //clear term
-				clear();
-				return;
+                clear();
+                return;
 			case "help": //clear term
 				help();
 				return;
@@ -287,12 +339,13 @@ $(document).ready(function() {
 				setTimeout(function() {
 					$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-login");
 					$(".ui-terminal-prompt").addClass("ui-terminal-prompt-password");
-					$(".ui-button").trigger("click");
+					$("#form\\:button_clear").trigger("click");
 				}, 30);	
 				
 			}
 			else if( context == "password" )  	
 			{
+                rebond = false;
 				password = command_id;
 				$(".ui-terminal-prompt").removeClass("ui-terminal-prompt-password");
 				server();
@@ -307,7 +360,7 @@ $(document).ready(function() {
 					add_elem("connection", "contacting server", false);
 					$("#form\\:terminal_input").attr("disabled", "disabled");
 					$("#form\\:terminal_input").val("");
-				}, 30);	
+				}, 30);
 			}
 			else if( context == "local" )  	
 			{
@@ -332,7 +385,7 @@ $(document).ready(function() {
 					errorCommand(full_command);
 				break;
 				}
-				
+                $("#form\\:terminal_input").val("");
 				setTimeout(function() {
 						end_command();
 				}, 30);

@@ -42,6 +42,20 @@ public class FileAccessLayer {
         return files;
     }
 
+    public FrontFile getFile(String parentPath, String name, String ownerId)
+    {
+        List<FrontFile> files =  getFiles(parentPath, ownerId);
+
+        for(FrontFile file : files)
+        {
+            System.out.print(file.getBackFile().getName());
+            if(file.getBackFile().getName().equals(name))
+                return file;
+        }
+
+        return null;
+    }
+
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
         Session session = HibernateSession.getSession();
