@@ -258,6 +258,7 @@ $(document).ready(function() {
 				base_cpt = 0;
 				context="server";
 		    	clear();
+                rebond = true;
 	    		add_elem("connection", respond, false);
 	    	}
 		    else if( code == "401")
@@ -299,9 +300,9 @@ $(document).ready(function() {
 	//event controller on keydown to create proxy before primefaces terminal
 	$("#form").keydown(function(e) {
 		//on enter key
-        rebond = false;
         if( e.keyCode == 13 || e.which == 13) {
-			var form = $(this);
+            rebond = false;
+            var form = $(this);
 			var formUrl=form.attr('action');
 			var full_command = $('.ui-terminal-input', form).val();
 			var command_id = full_command.split(" ")[0];
@@ -324,6 +325,9 @@ $(document).ready(function() {
 			case "help": //clear term
 				help();
 				return;
+            case "logout": //clear term
+                location.reload();
+                return;
 			}
 			
 			if( context == "server" )  	

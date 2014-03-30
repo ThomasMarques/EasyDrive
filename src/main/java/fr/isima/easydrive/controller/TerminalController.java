@@ -208,7 +208,7 @@ public class TerminalController implements Serializable{
                         }
                         else if(res == -2)
                         {
-                            response = "<span class=\"status-code\">[400]</span> The folder or the file to be copied doesn't exist.";
+                            response = "<span class=\"status-code\">[400]</span> The folder or the file to copy doesn't exist.";
                         }
                         else
                         {

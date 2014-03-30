@@ -215,10 +215,11 @@ public class FileService {
 
     public int move(String currentDir, String name, String newLocation, String ownerId)
     {
+        newLocation = getAbsolutePath(newLocation, currentDir);
         if(isReadOnlyFolder(newLocation) || isReadOnlyFolder(currentDir))
             return -3;
 
-        if(folderExist(newLocation, ownerId))
+        if(!folderExist(newLocation, ownerId))
             return -1;
 
         if(!folderExist(currentDir + name + "/", ownerId) && !fileExist(currentDir, name, ownerId))
@@ -230,6 +231,7 @@ public class FileService {
             return -3;
 
         frontFile.setAbsPath(newLocation);
+        persistFrontFile(frontFile);
 
         return 0;
     }
