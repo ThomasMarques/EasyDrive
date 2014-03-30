@@ -359,7 +359,7 @@ public class FileService {
 
     private boolean isReadOnlyFolder(String path)
     {
-        if(path.equals("/"))
+        if(path.equals("/") || path.equals("/home/"))
             return true;
         if(path.startsWith("/share/"))
         {
@@ -406,14 +406,42 @@ public class FileService {
 
     public FrontFile getFile(String path, String name, String ownerId)
     {
-        System.out.println("recv");
         if(fileDAL.fileExist(path, name, ownerId, false))
         {
-            System.out.println("FrontFile found");
             return fileDAL.getFile(path, name, ownerId);
         }
-        System.out.println("FrontFile not found");
 
         return null;
+    }
+
+    public FrontFile getFolder(String path, String name, String ownerId)
+    {
+        if(fileDAL.folderExist(path+name+"/", ownerId))
+        {
+            return fileDAL.getFile(path, name, ownerId);
+        }
+
+        return null;
+    }
+
+    public boolean remove(String currentDir, String name, String userId)
+    {
+        if(fileExist(currentDir, name, userId) )
+        {
+            FrontFile frontFile = getFile(currentDir, name, userId);
+            fileDAL.remove(frontFile);
+            return true;
+        }
+        else if(folderExist(currentDir+name+"/", userId) && !isReadOnlyFolder(currentDir+name+"/"))
+        {
+            FrontFile frontFile = getFolder(currentDir, name, userId);
+            fileDAL.remove(frontFile);
+            return true;
+        }
+        else
+        {
+            System.out.println("file " + currentDir + " " + name + " " + userId + " doesn't exist.");
+            return false;
+        }
     }
 }

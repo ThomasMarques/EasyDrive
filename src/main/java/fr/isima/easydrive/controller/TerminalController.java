@@ -188,8 +188,12 @@ public class TerminalController implements Serializable{
                 case "rm" :
                     if(params.length == 1)
                     {
-                        // TODO
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => remove a file specified in param.";
+                        if(fileService.remove(currentDir, params[0], userId))
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Removed.";
+                        }
+                        else
+                            response = "<span class=\"status-code\">[400]</span> File doesn't exist or impossible to delete.";
                     }
                     else
                     {

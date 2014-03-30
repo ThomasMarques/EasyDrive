@@ -137,4 +137,13 @@ public class FileAccessLayer {
 
         return files;
     }
+
+    public void remove(FrontFile frontFile)
+    {
+        Session session = HibernateSession.getSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(frontFile);
+        transaction.commit();
+        session.close();
+    }
 }
