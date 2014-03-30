@@ -65,7 +65,7 @@ public class FrontFile implements Serializable {
         return this.sharePath;
     }
 
-    public void setSharePath(String absPath) {
+    public void setSharePath(String sharePath) {
         this.sharePath = sharePath;
     }
 

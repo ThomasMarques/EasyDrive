@@ -148,7 +148,7 @@ public class TerminalController implements Serializable{
                 case "mkdir" :
                     if(params.length == 1)
                     {
-                        int requestResult = fileService.createDir(currentDir, params[0], userId);
+                        int requestResult = fileService.createDir(currentDir, params[0], userId, false);
 
                         /// Response analyser.
                         if(requestResult == 0)

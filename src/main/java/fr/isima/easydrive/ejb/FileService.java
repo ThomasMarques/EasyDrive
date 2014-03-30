@@ -14,6 +14,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import java.security.InvalidParameterException;
@@ -45,50 +46,84 @@ public class FileService {
 
     public List<FrontFile> getFiles(String parentPath, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
-        if(dirAndOwner.size() == 2)
+        try
         {
-            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
+            if(dirAndOwner.size() == 2)
+            {
+                ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            }
+            parentPath = dirAndOwner.get(0);
+
         }
-        parentPath = dirAndOwner.get(0);
+        catch ( FileNotFoundException e)
+        {
+            //use origin path
+        }
         return fileDAL.getFiles(parentPath, ownerId);
     }
 
     public List<FrontFile> getAll(String parentPath, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
-        if(dirAndOwner.size() == 2)
+        try
         {
-            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            List<String> dirAndOwner = getRealPathAndOwner(parentPath, ownerId);
+            if(dirAndOwner.size() == 2)
+            {
+                ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            }
+            parentPath = dirAndOwner.get(0);
         }
-        parentPath = dirAndOwner.get(0);
+        catch (FileNotFoundException e)
+        {
+            //use origin path
+        }
         return fileDAL.getAll(parentPath, ownerId);
     }
 
     public boolean folderExist(String path, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
-        if(dirAndOwner.size() == 2)
-        {
-            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+        try {
+            List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
+                if(dirAndOwner.size() == 2)
+            {
+                ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            }
+            path = dirAndOwner.get(0);
         }
-        path = dirAndOwner.get(0);
+        catch (FileNotFoundException e)
+        {
+            //use origin path
+        }
         return fileDAL.folderExist(path, ownerId);
     }
 
     public boolean fileExist(String path, String name, String ownerId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
-        if(dirAndOwner.size() == 2)
+        try
         {
-            ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            List<String> dirAndOwner = getRealPathAndOwner(path, ownerId);
+            if(dirAndOwner.size() == 2)
+            {
+                ownerId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            }
+            path = dirAndOwner.get(0);
         }
-        path = dirAndOwner.get(0);
+        catch(FileNotFoundException e)
+        {
+            //use origin path
+        }
         return fileDAL.fileExist(path, name, ownerId, false);
     }
 
     public String getAbsolutePath(String path, String currentPath)
     {
+        //cd /
+        if(path.equals("/"))
+        {
+            return path;
+        }
+
         //relative
         if(!path.substring(0,1).equals("/"))
         {
@@ -144,12 +179,22 @@ public class FileService {
         return path;
     }
 
-    public int createDir(String folder, String dirName, String userId)
+    public int createDir(String folder, String dirName, String userId, boolean root)
     {
-        if(isReadOnlyFolder(folder))
+        List<String> dirAndOwner;
+
+        if(isReadOnlyFolder(folder) && !root)
             return -2;
 
-        List<String> dirAndOwner = getRealPathAndOwner(dirName, userId);
+        try
+        {
+            dirAndOwner = getRealPathAndOwner(dirName, userId);
+        }
+        catch (FileNotFoundException e)
+        {
+            return -1;
+        }
+
         if(dirAndOwner.size() == 2)
         {
             userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
@@ -175,22 +220,37 @@ public class FileService {
 
     public List<FrontFile> search(String nameToSearch, String searchDir, String userId)
     {
-        List<String> dirAndOwner = getRealPathAndOwner(searchDir, userId);
-        if(dirAndOwner.size() == 2)
+        try
         {
-            userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            List<String> dirAndOwner = getRealPathAndOwner(searchDir, userId);
+            if(dirAndOwner.size() == 2)
+            {
+                userId = userDAL.getUserByLogin(dirAndOwner.get(1)).getIdUser();
+            }
+            searchDir = dirAndOwner.get(0);
         }
-        searchDir = dirAndOwner.get(0);
+        catch(FileNotFoundException e)
+        {
+            //use parrent path
+        }
         return fileDAL.search(nameToSearch, searchDir, userId);
     }
 
     public int share(String currentDir, String name, String userLogin, String ownerId)
     {
+        List<String> dirAndOwner;
         User user = userDAL.getUserByLogin(userLogin);
         if(user == null)
             return -2;
 
-        List<String> dirAndOwner = getRealPathAndOwner(currentDir, ownerId);
+        try
+        {
+            dirAndOwner = getRealPathAndOwner(currentDir, ownerId);
+        }
+        catch(FileNotFoundException e)
+        {
+            return -1;
+        }
         if(dirAndOwner.size() > 1)
             return -4;
 
@@ -198,16 +258,19 @@ public class FileService {
 
         if(fileExist(currentDir, name, ownerId))
         {
+            System.out.println("share file");
             /// Partage d'un fichier
             success = shareFile(currentDir, name, user, userDAL.getUserById(ownerId));
         }
         else if(folderExist(currentDir + name + "/", ownerId))
         {
+            System.out.println("share folder");
             /// Partage d'un dossier
             success = shareFolder(currentDir, name, user, userDAL.getUserById(ownerId));
         }
         else
         {
+            System.out.println("share error");
             return -1;
         }
         return success?0:-3;
@@ -250,10 +313,10 @@ public class FileService {
             return false;
 
         if(!folderExist("/share/" + owner.getLogin() + "/", userTarget.getIdUser()))
-            createDir("/share/", owner.getLogin(), userTarget.getIdUser());
+            createDir("/share/", owner.getLogin(), userTarget.getIdUser(), true);
 
         if(!folderExist(fileLocation, userTarget.getIdUser()))
-            createDir("/share/" + owner.getLogin() + "/", "files", userTarget.getIdUser());
+            createDir("/share/" + owner.getLogin() + "/", "files", userTarget.getIdUser(), true);
 
         /// Create link to the file
         FrontFile fileRef = fileDAL.getFile(currentDir, name, owner.getIdUser());
@@ -273,13 +336,15 @@ public class FileService {
     {
         String fileLocation = "/share/" + owner.getLogin() + "/" + name + "/";
         if(folderExist(fileLocation, owner.getIdUser()))
+        {
             return false;
+        }
 
         if(!folderExist("/share/" + owner.getLogin() + "/", userTarget.getIdUser()))
-            createDir("/share/", owner.getLogin(), userTarget.getIdUser());
+            createDir("/share/", owner.getLogin(), userTarget.getIdUser(), true);
 
         if(!folderExist(fileLocation, userTarget.getIdUser()))
-            createDir("/share/" + owner.getLogin() + "/", name, userTarget.getIdUser());
+            createDir("/share/" + owner.getLogin() + "/", name, userTarget.getIdUser(), true);
 
         /// Create link to the external folder
         FrontFile shortLink = new FrontFile();
@@ -303,8 +368,7 @@ public class FileService {
         return false;
     }
 
-    private List<String> getRealPathAndOwner(String path, String idCurrentUser)
-    {
+    private List<String> getRealPathAndOwner(String path, String idCurrentUser) throws FileNotFoundException {
         List<String> pathAndOwner = new ArrayList<String>();
         String[] splittedPath = path.split("/");
         if(path.startsWith("/share/") && splittedPath.length > 3 && !splittedPath[3].equals("files"))
@@ -322,6 +386,10 @@ public class FileService {
                 System.out.println(link);
                 System.out.println(login);
                 FrontFile linkFile = fileDAL.getFileSymlink(link, idCurrentUser);
+
+                if(linkFile == null)
+                    throw new FileNotFoundException();
+
                 if(linkFile.getSharePath() == null)
                 {
                     throw new InvalidParameterException();
