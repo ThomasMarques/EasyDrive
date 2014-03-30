@@ -204,12 +204,27 @@ public class TerminalController implements Serializable{
                 case "cp" :
                     if(params.length == 2)
                     {
-                        // TODO
-                        response = "<span class=\"status-code\">[400]</span> Not implemented => copy the file (param1) in the folder (param2).";
+                        int res = fileService.copy(currentDir, params[0], params[1], userId);
+                        if(res == 0)
+                        {
+                            response = "<span class=\"status-code\">[200]</span> Copied.";
+                        }
+                        else if(res == -1)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The destination folder doesn't exist.";
+                        }
+                        else if(res == -2)
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The folder or the file to copy doesn't exist.";
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> Copy impossible.";
+                        }
                     }
                     else
                     {
-                        response = "<span class=\"status-code\">[400]</span> Usage : `cp nameOfFileOrDirectoryToCopy location`.";
+                        response = "<span class=\"status-code\">[400]</span> Usage : `cp nameOfFileOrDirectoryToMove newLocation`.";
                     }
                     break;
 

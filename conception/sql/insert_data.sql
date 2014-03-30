@@ -22,5 +22,5 @@ INSERT INTO `front_file` VALUES
 (6, 3, 2, '/', NULL),
 (7, 1, 3, '', NULL),
 (8, 2, 3, '/', NULL),
-(9, 3, 3, '/', NULL),
+(9, 3, 3, '/', NULL);
 -- End Front file data

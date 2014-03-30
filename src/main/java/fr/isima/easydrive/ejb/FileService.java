@@ -359,7 +359,7 @@ public class FileService {
 
     private boolean isReadOnlyFolder(String path)
     {
-        if(path.equals("/") || path.equals("/home/"))
+        if(path.equals("/"))
             return true;
         if(path.startsWith("/share/"))
         {
@@ -416,7 +416,7 @@ public class FileService {
 
     public FrontFile getFolder(String path, String name, String ownerId)
     {
-        if(fileDAL.folderExist(path+name+"/", ownerId))
+        if(fileDAL.folderExist(path + name + "/", ownerId))
         {
             return fileDAL.getFile(path, name, ownerId);
         }
@@ -443,5 +443,32 @@ public class FileService {
             System.out.println("file " + currentDir + " " + name + " " + userId + " doesn't exist.");
             return false;
         }
+    }
+
+    public int copy(String currentDir, String name, String newLocation, String ownerId)
+    {
+        newLocation = getAbsolutePath(newLocation, currentDir);
+        if(isReadOnlyFolder(newLocation) || isReadOnlyFolder(currentDir))
+            return -3;
+
+        if(!folderExist(newLocation, ownerId))
+            return -1;
+
+        if(!folderExist(currentDir + name + "/", ownerId) && !fileExist(currentDir, name, ownerId))
+            return -2;
+
+        FrontFile frontFile = fileDAL.getFile(currentDir, name, ownerId);
+
+        if(frontFile == null)
+            return -3;
+
+        FrontFile newFrontFile = new FrontFile();
+        newFrontFile.setSharePath(frontFile.getSharePath());
+        newFrontFile.setBackFile(frontFile.getBackFile());
+        newFrontFile.setUser(frontFile.getUser());
+        newFrontFile.setAbsPath(newLocation);
+        persistFrontFile(newFrontFile);
+
+        return 0;
     }
 }
