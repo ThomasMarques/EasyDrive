@@ -127,6 +127,21 @@ public class TerminalController implements Serializable{
                         response = "<span class=\"status-code\">[200]</span> "+currentDir;
                         response += formateListFiles(listChild, false);
                     }
+                    else if(params.length == 1)
+                    {
+                        String path = fileService.getAbsolutePath(params[0], currentDir);
+
+                        if(path != null && fileService.folderExist(path, userId))
+                        {
+                            List<FrontFile> listChild = fileService.getAll(path, userId);
+                            response = "<span class=\"status-code\">[200]</span> "+path;
+                            response += formateListFiles(listChild, false);
+                        }
+                        else
+                        {
+                            response = "<span class=\"status-code\">[400]</span> The given path `" + params[0] + "` is not a directory or doesn't exist.";
+                        }
+                    }
                     else
                     {
                         response = "<span class=\"status-code\">[400]</span> Usage : `ls`.";
