@@ -9,13 +9,7 @@ INSERT INTO `user` VALUES
 INSERT INTO `back_file` VALUES
 (1, NULL, NULL, 0, '', NULL, NULL),
 (2, NULL, NULL, 0, 'home', NULL, NULL),
-(3, NULL, NULL, 0, 'share', NULL, NULL),
-(4, NULL, NULL, 0, '', NULL, NULL),
-(5, NULL, NULL, 0, 'home', NULL, NULL),
-(6, NULL, NULL, 0, 'share', NULL, NULL),
-(7, NULL, NULL, 0, '', NULL, NULL),
-(8, NULL, NULL, 0, 'home', NULL, NULL),
-(9, NULL, NULL, 0, 'share', NULL, NULL);
+(3, NULL, NULL, 0, 'share', NULL, NULL);
 -- End Back file data
 
 -- Front file data
@@ -23,10 +17,10 @@ INSERT INTO `front_file` VALUES
 (1, 1, 1, '', NULL),
 (2, 2, 1, '/', NULL),
 (3, 3, 1, '/', NULL),
-(4, 4, 2, '', NULL),
-(5, 5, 2, '/', NULL),
-(6, 6, 2, '/', NULL),
-(7, 7, 3, '', NULL),
-(8, 8, 3, '/', NULL),
-(9, 9, 3, '/', NULL);
+(4, 1, 2, '', NULL),
+(5, 2, 2, '/', NULL),
+(6, 3, 2, '/', NULL),
+(7, 1, 3, '', NULL),
+(8, 2, 3, '/', NULL),
+(9, 3, 3, '/', NULL),
 -- End Front file data
